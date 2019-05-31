@@ -1,8 +1,9 @@
 function plotHandles = updateNodesInViewMovie(swarmWorld, swarmState, targetState, trueWorld, runParams, swarmModel, targetModel, plotHandles)
 subplot(plotHandles.subplotHandle)
 plotHandles.figh_subplot2 = imagesc(trueWorld.xcp,trueWorld.ycp,swarmWorld.mutualInfoSurface);
-V = swarmWorld.nodesInView;
+
 if ( ~isempty(swarmWorld.exploredGraph.Nodes) )
+    V = swarmWorld.nodesInView;
     % trueGraphIndex = swarmWorld.exploredGraph.Nodes.trueGraphIndex;
     hold on;
     cmapTemp=gray(100);
@@ -14,7 +15,7 @@ if ( ~isempty(swarmWorld.exploredGraph.Nodes) )
         nodex = trueWorld.xcp(bx);
         nodey = trueWorld.ycp(by);
         minVal = -3;
-        maxVal = swarmModel.m + 3;
+        maxVal = swarmModel.mZ + 3;
         interpVal = (swarmWorld.signals(i)-minVal) / (maxVal - minVal);
         colorInd = min(100,max( round(interpVal*100),0) + 1);
         plot(nodex,nodey,'ks','MarkerFaceColor',cmapTemp(colorInd,:))
@@ -52,6 +53,7 @@ for i = 1:1:swarmModel.N
     set(plotHandles.figh_sensingRadius(i),'XData',xc,'YData',yc);
 end
 
+if ( isfield(swarmWorld,'cumlLR') )
 if ( any( swarmWorld.cumlLR > swarmModel.cumlLRthresh ) )
     disp('Plotting most likely target location');
     [maxVal, maxInd] = max(swarmWorld.env_probPresent); %log_likelihood_env);
@@ -61,4 +63,5 @@ if ( any( swarmWorld.cumlLR > swarmModel.cumlLRthresh ) )
     trueGraphIndexMaxProb = swarmWorld.exploredGraph.Nodes.trueGraphIndex(maxInd);
     % get nodeXY
     plot(trueWorld.nodeX(trueGraphIndexMaxProb), trueWorld.nodeY(trueGraphIndexMaxProb), 'mx' , 'MarkerSize', 14, 'linewidth',2);
+end
 end

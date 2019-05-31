@@ -16,8 +16,8 @@ elseif ( strcmp(runParams.type, 'matlab') )
             swarmModel.taskGeneration
             if ( strcmp(swarmModel.taskGeneration,'lawnmower')==1 )
                 % we *require *4 agents for the lawnmower
-                if ( swarmModel.N ~= 4 )
-                    error('Must have 4 agents with taskGeneration = lawnmower');
+                if ( swarmModel.N ~= 4 && swarmModel.N ~= 2 )
+                    error('Must have either 2 or 4 agents with taskGeneration = lawnmower');
                 end
                 R = swarmModel.Rsense;
                 xmin = trueWorld.minX;
@@ -27,44 +27,61 @@ elseif ( strcmp(runParams.type, 'matlab') )
                 
                 % agents arranged clockwise starting from lower left corner
                 R = R*0.95;
-                [xpts1, ypts1, xinit1, yinit1] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 1, R);
-                [xpts2, ypts2, xinit2, yinit2] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 2, R);
-                [xpts3, ypts3, xinit3, yinit3] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 3, R);
-                [xpts4, ypts4, xinit4, yinit4] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 4, R);
-                swarmState.numWpts = length(xpts1);
-                %                 if swarmModel.useGeneratedInitialFormation % if this is 1, then use the generated formation
-                %                     idx = swarmModel.initialFormationID;
-                %                     load(['./scene/initialFormation' num2str(idx) '.mat']);
-                %                 else
-                xv = [xinit1 xinit2 xinit3 xinit4];
-                yv = [yinit1 yinit2 yinit3 yinit4];
-                %                 end
-                
-                swarmState.wptIndex(1) = 1;
-                swarmState.wptIndex(2) = 1;
-                swarmState.wptIndex(3) = 1;
-                swarmState.wptIndex(4) = 1;
-                
-                swarmState.wptListX(:,1) = xpts1;
-                swarmState.wptListX(:,2) = xpts2;
-                swarmState.wptListX(:,3) = xpts3;
-                swarmState.wptListX(:,4) = xpts4;
-                
-                swarmState.wptListY(:,1) = ypts1;
-                swarmState.wptListY(:,2) = ypts2;
-                swarmState.wptListY(:,3) = ypts3;
-                swarmState.wptListY(:,4) = ypts4;
-                
-                swarmState.xd(1,1) = swarmState.wptListX(swarmState.wptIndex(1),1);
-                swarmState.xd(2,1) = swarmState.wptListX(swarmState.wptIndex(2),2);
-                swarmState.xd(3,1) = swarmState.wptListX(swarmState.wptIndex(3),3);
-                swarmState.xd(4,1) = swarmState.wptListX(swarmState.wptIndex(4),4);
-                
-                swarmState.yd(1,1) = swarmState.wptListY(swarmState.wptIndex(1),1);
-                swarmState.yd(2,1) = swarmState.wptListY(swarmState.wptIndex(2),2);
-                swarmState.yd(3,1) = swarmState.wptListY(swarmState.wptIndex(3),3);
-                swarmState.yd(4,1) = swarmState.wptListY(swarmState.wptIndex(4),4);
-                
+                if ( swarmModel.N == 4 )
+                    [xpts1, ypts1, xinit1, yinit1] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 1, R);
+                    [xpts2, ypts2, xinit2, yinit2] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 2, R);
+                    [xpts3, ypts3, xinit3, yinit3] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 3, R);
+                    [xpts4, ypts4, xinit4, yinit4] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 4, R);
+                    swarmState.numWpts = length(xpts1);
+                    xv = [xinit1 xinit2 xinit3 xinit4];
+                    yv = [yinit1 yinit2 yinit3 yinit4];
+                    
+                    swarmState.wptIndex(1) = 1;
+                    swarmState.wptIndex(2) = 1;
+                    swarmState.wptIndex(3) = 1;
+                    swarmState.wptIndex(4) = 1;
+                    
+                    swarmState.wptListX(:,1) = xpts1;
+                    swarmState.wptListX(:,2) = xpts2;
+                    swarmState.wptListX(:,3) = xpts3;
+                    swarmState.wptListX(:,4) = xpts4;
+                    
+                    swarmState.wptListY(:,1) = ypts1;
+                    swarmState.wptListY(:,2) = ypts2;
+                    swarmState.wptListY(:,3) = ypts3;
+                    swarmState.wptListY(:,4) = ypts4;
+                    
+                    swarmState.xd(1,1) = swarmState.wptListX(swarmState.wptIndex(1),1);
+                    swarmState.xd(2,1) = swarmState.wptListX(swarmState.wptIndex(2),2);
+                    swarmState.xd(3,1) = swarmState.wptListX(swarmState.wptIndex(3),3);
+                    swarmState.xd(4,1) = swarmState.wptListX(swarmState.wptIndex(4),4);
+                    
+                    swarmState.yd(1,1) = swarmState.wptListY(swarmState.wptIndex(1),1);
+                    swarmState.yd(2,1) = swarmState.wptListY(swarmState.wptIndex(2),2);
+                    swarmState.yd(3,1) = swarmState.wptListY(swarmState.wptIndex(3),3);
+                    swarmState.yd(4,1) = swarmState.wptListY(swarmState.wptIndex(4),4);
+                elseif ( swarmModel.N == 2 )
+                    [xpts1, ypts1, xinit1, yinit1] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 1, R);
+                    [xpts2, ypts2, xinit2, yinit2] = lawnmowerRectangle(xmin,xmax, ymin, ymax, 3, R);
+                    swarmState.numWpts = length(xpts1);
+                    xv = [xinit1 xinit2];
+                    yv = [yinit1 yinit2];
+                    
+                    swarmState.wptIndex(1) = 1;
+                    swarmState.wptIndex(2) = 1;
+                    
+                    swarmState.wptListX(:,1) = xpts1;
+                    swarmState.wptListX(:,2) = xpts2;
+                    
+                    swarmState.wptListY(:,1) = ypts1;
+                    swarmState.wptListY(:,2) = ypts2;
+                    
+                    swarmState.xd(1,1) = swarmState.wptListX(swarmState.wptIndex(1),1);
+                    swarmState.xd(2,1) = swarmState.wptListX(swarmState.wptIndex(2),2);
+                    
+                    swarmState.yd(1,1) = swarmState.wptListY(swarmState.wptIndex(1),1);
+                    swarmState.yd(2,1) = swarmState.wptListY(swarmState.wptIndex(2),2);               
+                end
                 
                 %                 figure;
                 %                 plot([xmin xmin xmax xmax xmin],[ymin ymax ymax ymin ymin],'k-','linewidth',2);

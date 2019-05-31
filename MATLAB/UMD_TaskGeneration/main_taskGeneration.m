@@ -1,5 +1,5 @@
 % Main simulation script for Heron-UMD task generation.
-% A. Wolek, S. Cheng, Feb. 2019
+% A. Wolek, S. Cheng, May. 2019
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % User's guide, see README.txt and also:
@@ -15,7 +15,7 @@ if ~exist('MonteCarloSwitch','var')
     format compact;
     updatePath;
     %rng('default');
-    rng(1);
+    rng(2);
 end
 
 
@@ -33,12 +33,14 @@ if ~exist('MonteCarloSwitch','var')
     %[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_RandalsAtF3();
     disp('Running standard (non Monte-Carlo) simulation')
 %     [runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityblocks();
-    [runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityBlocksAtF3();
+    %[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityBlocksAtF3();
+    [runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_1Dline(); % IDs are defined in MonteCarloEngine.m
 else
     % for Monte Carlo, specify the IDs of the scenes
     %[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_RandalsAtF3(algorithmID,initialFormationID,targetMotionID); % IDs are defined in MonteCarloEngine.m
     disp('Running Monte-Carlo simulation')
-    [runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityblocks(algorithmID,initialFormationID,targetMotionID); % IDs are defined in MonteCarloEngine.m
+    %[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityblocks(algorithmID,initialFormationID,targetMotionID); % IDs are defined in MonteCarloEngine.m
+    
 end
 
 
@@ -90,7 +92,7 @@ end
 %     %movie_targetViews( swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )
 %     movie_mutualInfoWpts( swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )
 %     % movie_likelihoodWpts( swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )
-%     %movie_lrdt( swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )
+movie_lrdt( swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )
 %     % plots
 %     plotPerformance(swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )
 %     plotOccupGraphTracks(swarmWorldHist, swarmStateHist, targetStateHist, trueWorld, runParams, swarmModel, targetModel )

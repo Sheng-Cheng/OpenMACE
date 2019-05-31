@@ -33,7 +33,7 @@ for k = 1:1:length(swarmStateHist)
     toc
    pause(0.1);
    %pause;
-    fprintf('Frame %i of %i \n',k, length(swarmStateHist)-1);
+   %fprintf('Frame %i of %i \n',k, length(swarmStateHist)-1);
 end
     
 end

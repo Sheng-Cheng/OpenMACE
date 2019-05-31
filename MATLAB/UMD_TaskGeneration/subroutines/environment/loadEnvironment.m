@@ -6,6 +6,8 @@ if ( exist([trueWorld.folder trueWorld.fileName '_' trueWorld.type '_full.mat'],
     switch trueWorld.type
         case 'cityblocks'
             nodeXY = loadCityBlocksNodes(trueWorld.blockLength, trueWorld.numBlocks, trueWorld.binWidth);
+        case 'line'
+            nodeXY = loadLineNodes(trueWorld.blockLength, trueWorld.binWidth);            
         case 'openStreetMap'
             [ nodeXY, LatRef, LongRef] = loadOpenStreetMapNodes(trueWorld.fileName, trueWorld.refX, ...
                 trueWorld.refY, trueWorld.boxlength, trueWorld.boxwidth, trueWorld.angle, trueWorld.binWidth, trueWorld.buffer);

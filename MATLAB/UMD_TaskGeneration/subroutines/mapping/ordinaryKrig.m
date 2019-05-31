@@ -18,8 +18,8 @@
 % Artur Wolek, 2018
 
 function forecast = ordinaryKrig(X,Y,measurements,R)
-Nx = size(X,1);
-Ny = size(X,2);
+Nx = size(X,2);
+Ny = size(X,1);
 forecast = zeros(Nx,Ny);
 if ( ~isempty(measurements) )
     

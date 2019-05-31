@@ -1,4 +1,4 @@
-function log_likelihood = motionUpdate(log_likelihood, Q , q_s_n , q_n_n )
+function log_likelihood = motionUpdate(log_likelihood, Q , q_s_n , q_n_s, q_n_n )
 
 ns = length(log_likelihood);
 

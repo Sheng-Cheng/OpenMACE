@@ -19,12 +19,12 @@ if ( ~isempty(swarmWorld.log_likelihood) )
     % -------------------------------------------------------------------------
     
     % perform the motion update first for the LRDT
-    swarmWorld.log_likelihood = motionUpdate( swarmWorld.log_likelihood , swarmWorld.Q , swarmModel.q_s_n, swarmModel.q_n_n );
+    swarmWorld.log_likelihood = motionUpdate( swarmWorld.log_likelihood , swarmWorld.Q , swarmModel.q_s_n, swarmModel.q_n_s, swarmModel.q_n_n );
     
-    % and then for each existing tracker
-    for i  = swarmWorld.trackerInd
-        swarmWorld.tracker{i}.log_likelihood = motionUpdate( swarmWorld.tracker{i}.log_likelihood , swarmWorld.Q , swarmModel.q_s_n, swarmModel.q_n_n );
-    end
+%     % and then for each existing tracker
+%     for i  = swarmWorld.trackerInd
+%         swarmWorld.tracker{i}.log_likelihood = motionUpdate( swarmWorld.tracker{i}.log_likelihood , swarmWorld.Q , swarmModel.q_s_n, swarmModel.q_n_n );
+%     end
     
     % 2. Measurement Update
     % -------------------------------------------------------------------------
@@ -55,25 +55,25 @@ if ( ~isempty(swarmWorld.log_likelihood) )
                 end
                 
                 % data association is based on naive gating method:
-                gates = gateMsmts(V, swarmWorld);
+                %gates = gateMsmts(V, swarmWorld);
                 
                 
                 % apply likelihood update to each node
                 for j = 1:1:length(V)
                     S = findTargStatesInView(swarmWorld.Mc, V(j));
-                    if ( gates{j} == 0 ) % update LRDT
+                    %if ( gates{j} == 0 ) % update LRDT
                         for k = 1:1:length(S)
                             swarmWorld.log_likelihood(S(k)) =  swarmWorld.log_likelihood(S(k)) + logMsmtLikelihood(j);
                         end
-                    elseif (gates{j} ~= -1 ) % update trackers
-                        fprintf('Updating tracker %d ! \n', gates{j});
-                        for k = 1:1:length(gates{j})
-                            ind = gates{j}(k);
-                            for m = 1:1:length(S)
-                                swarmWorld.tracker{ind}.log_likelihood(S(m)) =  swarmWorld.log_likelihood(S(m)) + logMsmtLikelihood(j);
-                            end
-                        end
-                    end
+%                     elseif (gates{j} ~= -1 ) % update trackers
+%                         fprintf('Updating tracker %d ! \n', gates{j});
+%                         for k = 1:1:length(gates{j})
+%                             ind = gates{j}(k);
+%                             for m = 1:1:length(S)
+%                                 swarmWorld.tracker{ind}.log_likelihood(S(m)) =  swarmWorld.log_likelihood(S(m)) + logMsmtLikelihood(j);
+%                             end
+%                         end
+%                     end
                     
                 end
             end
@@ -167,18 +167,18 @@ if ( ~isempty(swarmWorld.log_likelihood) )
         by = swarmWorld.exploredGraph.Nodes.by(maxInd);
         predictedTargXY = [trueWorld.xcp(bx) trueWorld.ycp(by)];
         
-        % spawn a tracker        
-        newTrackInd = length(swarmWorld.tracker) + 1;
-        fprintf('Spawning tracker %d based on node %d ! \n', newTrackInd, maxInd);
-        
-        % carve out likelihood
-        d = 10;
-        carveoutNodes = nearest(G,maxInd,d);
+%         % spawn a tracker        
+%         newTrackInd = length(swarmWorld.tracker) + 1;
+%         fprintf('Spawning tracker %d based on node %d ! \n', newTrackInd, maxInd);
+%         
+%         % carve out likelihood
+%         d = 10;
+%         carveoutNodes = nearest(G,maxInd,d);
                 
-        % replace LRDT likelihood with prior
-        for i = 1:1:length(carveoutNodes)
-            
-        end
+%         % replace LRDT likelihood with prior
+%         for i = 1:1:length(carveoutNodes)
+%             
+%         end
         
         % create copy of map with new likelihood        
 
@@ -217,22 +217,22 @@ if ( ~isempty(swarmWorld.log_likelihood) )
         end
     end
     
-    % destroy trackers
-    % -------------------------------------------------------------------------
-    trackersToDestroy = [];
-    thresh = 1;
-    % for each tracker:
-    for i = 1:1:length(swarmWorld.trackerInd)
-        ind = swarmWorld.trackerInd(i);
-        % check if at least one node in track is above detection threshold
-        if ( ~any( swarmWorld.tracker{ind}.log_likelihood >= thresh ) )
-            trackersToDestroy = [trackersToDestroy ind]; 
-            fprintf('Destorying tracker %d ! \n', ind);
-        end        
-    end
+%     % destroy trackers
+%     % -------------------------------------------------------------------------
+%     trackersToDestroy = [];
+%     thresh = 1;
+%     % for each tracker:
+%     for i = 1:1:length(swarmWorld.trackerInd)
+%         ind = swarmWorld.trackerInd(i);
+%         % check if at least one node in track is above detection threshold
+%         if ( ~any( swarmWorld.tracker{ind}.log_likelihood >= thresh ) )
+%             trackersToDestroy = [trackersToDestroy ind]; 
+%             fprintf('Destorying tracker %d ! \n', ind);
+%         end        
+%     end
     
    % simply removing the tracker from trackerInd is sufficient to destroy
-   swarmWorld.trackerInd = setdiff(swarmWorld.trackerInd, trackersToDestroy);       
+   % swarmWorld.trackerInd = setdiff(swarmWorld.trackerInd, trackersToDestroy);       
     
     % update U, V
     % -------------------------------------------------------------------------

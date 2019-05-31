@@ -8,7 +8,7 @@ function gates = gateMsmts(V, swarmWorld)
 thresh = 1;
 d = 3;
 
-% for each track:
+for each track:
 for i  = 1:1:length(swarmWorld.trackerInd)
     
     % track index

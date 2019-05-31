@@ -5,7 +5,9 @@ updatePath;
 
 % user should modify loadParams.m as desired:
 %[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityBlocksAtF3();
-[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_RandalsAtF3_LRDTtest()
+%[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_RandalsAtF3_LRDTtest()
+[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_1Dline()
+
 
 % draw control points
 for i = 1:1:trueWorld.numBinsX
