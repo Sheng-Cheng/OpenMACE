@@ -1,0 +1,68 @@
+function swarmWorld = updateLikelihood(swarmWorld, swarmState, swarmModel, trueWorld, targetState, targetModel)
+
+if ( ~isempty(swarmWorld.log_likelihood) )
+ 
+    % motionUpdate
+    swarmWorld = motionUpdate(swarmWorld, swarmModel);
+    
+    % simulateTargetSensorCellWise
+    [signals, V, swarmWorld.numViews] = simulateTargetSensorCellWise( swarmState, swarmModel, swarmWorld, trueWorld, targetState, targetModel );
+    
+    % measurementUpdate
+    swarmWorld = measurementUpdate(swarmWorld, swarmModel, signals, V);
+    
+    % normalizeLogLikelihood
+    [swarmWorld.log_likelihood, swarmWorld.tss_probPresent, swarmWorld.tss_probAbsent] = normalizeLogLikelihood(swarmWorld.log_likelihood);
+    
+    % projectLikelihood (from target state graph onto environment graph)
+    swarmWorld.env_probPresent = projectLikelihood( swarmWorld.tss_probPresent , swarmWorld.Mc );
+    swarmWorld.log_likelihood_env = log(projectLikelihood( exp(swarmWorld.log_likelihood) , swarmWorld.Mc ));
+    
+    % error check
+    if ( any( isnan(swarmWorld.log_likelihood) ) )
+        disp('Error: NaN in log_likelihood');
+    end
+    
+    % callDetections
+    swarmWorld = callDetections(swarmWorld, swarmModel, targetState, targetModel, trueWorld);
+    
+    % trackMaintenance   
+    %     % destroy trackers
+    %     % -------------------------------------------------------------------------
+    %     trackersToDestroy = [];
+    %     thresh = 1;
+    %     % for each tracker:
+    %     for i = 1:1:length(swarmWorld.trackerInd)
+    %         ind = swarmWorld.trackerInd(i);
+    %         % check if at least one node in track is above detection threshold
+    %         if ( ~any( swarmWorld.tracker{ind}.log_likelihood >= thresh ) )
+    %             trackersToDestroy = [trackersToDestroy ind];
+    %             fprintf('Destorying tracker %d ! \n', ind);
+    %         end
+    %     end
+    
+    % simply removing the tracker from trackerInd is sufficient to destroy
+    % swarmWorld.trackerInd = setdiff(swarmWorld.trackerInd, trackersToDestroy);
+    
+
+    % updatePriors
+    
+    sumL = sum(exp(swarmWorld.log_likelihood_env));
+    %nullStateProb = swarmWorld.U(by,bx) = 1/(1 + sumL); % prob no target
+    for i = 1:1:length(swarmWorld.log_likelihood_env)
+        bx = swarmWorld.exploredGraph.Nodes.bx(i);
+        by = swarmWorld.exploredGraph.Nodes.by(i);
+        L = exp(swarmWorld.log_likelihood_env(i));
+        swarmWorld.V(by,bx) = 0;
+        
+        %swarmWorld.O(by,bx) = L/(1 + sumL); % prob occupied
+        swarmWorld.O(by,bx) = swarmWorld.env_probPresent(i);
+        swarmWorld.U(by,bx) = (1 - swarmWorld.O(by,bx));
+    end
+    
+    
+end
+
+
+end
+

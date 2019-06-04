@@ -4,7 +4,7 @@ function [runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 runParams = struct;
 runParams.type = 'matlab'; % 'matlab' 'mace' 'f3'
-runParams.T = 2*60; %4*60;% total simulation/mission time
+runParams.T = 1*60; %4*60;% total simulation/mission time
 runParams.dt = 0.01; % time-step (even if MACE is running, Sheng needs this for cost computation)
 
 
@@ -104,7 +104,7 @@ swarmModel.planningHorizon = swarmModel.samplesPerTask * swarmModel.Tsamp; %runP
 swarmModel.mappingSensorType = 'noisy'; % 'noisy' or 'perfect'
 if ( strcmp(swarmModel.mappingSensorType,'noisy') )
     if ( nargin ~=3 )
-        swarmModel.mG = 5; % sensitivity
+        swarmModel.mG = 3; % sensitivity
     end
     swarmModel.nG = 100; % number of discrete sensor levels
     swarmModel.mapConfLevel = 0.95;
@@ -142,7 +142,7 @@ swarmModel.q_n_n = 1 - swarmModel.q_s_n;
 swarmModel.terminateSimOnDetect = 0;
 swarmModel.confLevel = 0.95;
 if ( nargin ~=3 )
-    swarmModel.mZ = 5;
+    swarmModel.mZ = 3;
 end
 swarmModel.nZ = 100;
 
@@ -159,7 +159,7 @@ swarmModel.z_O = swarmModel.z_O ./ sum(swarmModel.z_O);
 % Target
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 targetModel = struct;
-targetModel.M = 5; % number of targets
+targetModel.M = 3; % number of targets
 targetModel.type = 'constantSpeedRandomWalk'; % 'varyingSpeedRandomWalk' or 'constantSpeedRandomWalk'
 targetModel.probStopping = 0.75;
 targetModel.m = 1.0;

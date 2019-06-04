@@ -12,22 +12,15 @@ function swarmWorld = updateSwarmWorld(swarmWorld, swarmState, swarmModel, trueW
 % colorbar;
 % title('Initial')
 
-% simulateGridCellSensor
-switch swarmModel.mappingSensorType
-    case 'perfect'
-        [cellsInView, discoveredCells, nodeCells, swarmWorld.cellStateMat, swarmWorld.cellMsmtMat ] = simulateGridCellSensor( ...
-            trueWorld.xcp, trueWorld.ycp, swarmModel.Rsense, swarmState.x, swarmModel.N, ...
-            swarmWorld.cellStateMat, swarmWorld.cellMsmtMat, trueWorld.numNodesMat, swarmModel.communicationTopology );
-        detectedCells = nodeCells;
-    case 'noisy'
-        % map and target sensor
-        [cellsInView, mapSignals, targSignals, swarmWorld.cellStateMat, swarmWorld.cellMsmtMat ] = simulateNoisySensors( trueWorld.xcp, trueWorld.ycp, swarmModel.Rsense, swarmState.x, ...
-            swarmModel.N, targetState, targetModel, swarmWorld.cellStateMat, swarmWorld.cellMsmtMat, trueWorld.numNodesMat, swarmModel.communicationTopology, ...
-            swarmModel.mG, swarmModel.nG, swarmModel.mZ, swarmModel.nZ, trueWorld.G_env );
+% map and target sensor
+[cellsInView, mapSignals, targSignals, swarmWorld.cellStateMat, swarmWorld.cellMsmtMat ] = simulateNoisySensors( trueWorld.xcp, trueWorld.ycp, swarmModel.Rsense, swarmState.x, ...
+    swarmModel.N, targetState, targetModel, swarmWorld.cellStateMat, swarmWorld.cellMsmtMat, trueWorld.numNodesMat, swarmModel.communicationTopology, ...
+    swarmModel.mG, swarmModel.nG, swarmModel.mZ, swarmModel.nZ, trueWorld.G_env );
 
-        % Bayes update at explored cells
-        [swarmWorld.V, swarmWorld.U, swarmWorld.O] = bayesUpdate( swarmWorld.cellDetMat , swarmWorld.V, swarmWorld.U, swarmWorld.O, cellsInView, mapSignals, targSignals, ...
-            swarmModel.g_V, swarmModel.g_UO, swarmModel.z_VU, swarmModel.z_O );
+% Bayes update at explored cells
+[swarmWorld.V, swarmWorld.U, swarmWorld.O] = bayesUpdate( swarmWorld.cellDetMat , swarmWorld.V, swarmWorld.U, swarmWorld.O, cellsInView, mapSignals, targSignals, ...
+    swarmModel.g_V, swarmModel.g_UO, swarmModel.z_VU, swarmModel.z_O );
+
 %         figure;
 %         subplot(2,2,1)
 %         imagesc(swarmWorld.V); caxis([0 1])
@@ -39,11 +32,11 @@ switch swarmModel.mappingSensorType
 %         imagesc(swarmWorld.O./swarmWorld.U);
 %         colorbar;
 %         title('bayes update')
-        
-        
-        % check for new detections
-        [swarmWorld.cellDetMat, detectedCells, swarmWorld.V, swarmWorld.U, swarmWorld.O] = detectNodes( swarmWorld.cellDetMat , swarmWorld.V, swarmWorld.U, swarmWorld.O, cellsInView, swarmModel.nodeLRthresh );
-        
+
+
+% check for new node detections
+[swarmWorld.cellDetMat, detectedCells, swarmWorld.V, swarmWorld.U, swarmWorld.O] = detectNodes( swarmWorld.cellDetMat , swarmWorld.V, swarmWorld.U, swarmWorld.O, cellsInView, swarmModel.nodeLRthresh );
+
 %         figure;
 %         subplot(2,2,1)
 %         imagesc(swarmWorld.V); caxis([0 1])
@@ -55,8 +48,7 @@ switch swarmModel.mappingSensorType
 %         imagesc(swarmWorld.O./swarmWorld.U);
 %         colorbar;
 %         title('detected nodes')
-        
-end
+
 
 
 

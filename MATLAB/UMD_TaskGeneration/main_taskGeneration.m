@@ -15,7 +15,7 @@ if ~exist('MonteCarloSwitch','var')
     format compact;
     updatePath;
     %rng('default');
-    rng(2);
+    rng(1);
 end
 
 
@@ -42,7 +42,6 @@ else
     %[runParams, ROS_MACE, trueWorld, swarmModel, targetModel] = loadParams_cityblocks(algorithmID,initialFormationID,targetMotionID); % IDs are defined in MonteCarloEngine.m
     
 end
-
 
 % initialize the swarm world, target and swarm states
 [swarmWorld, swarmState, targetState, ROS_MACE] = initializeRun(trueWorld, swarmModel, targetModel, runParams, ROS_MACE);

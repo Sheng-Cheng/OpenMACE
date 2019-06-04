@@ -68,7 +68,7 @@ if ( ~isempty(swarmWorld.exploredGraph.Nodes) )
 end
 colormap(gca,'parula')
 colorbar;
-%caxis([-10 1]);
+caxis([-10 1]);
 %caxis([0 1]);
 hold off;
 

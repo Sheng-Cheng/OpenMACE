@@ -88,6 +88,8 @@ switch swarmModel.communicationTopology
             swarmWorld.log_likelihood_env = projectLikelihood( swarmWorld.log_likelihood , trueWorld.Mc );
         end
         swarmWorld.targetDetectedFlag = 0;
+            
+        swarmWorld.tracker = [];
         
     case 'allToAll'
         for k = 1:swarmModel.N
