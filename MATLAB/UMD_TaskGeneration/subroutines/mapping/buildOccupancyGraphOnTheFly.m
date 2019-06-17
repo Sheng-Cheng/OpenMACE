@@ -116,59 +116,34 @@ if (~isempty(nodeCells))
         
         % Sheng uncommented the following line when he tried to run the
         % auctioneer with decentralized situational awareness.
-%          [targetStateSpaceGraph, Mpc2s, Mc, Mp, Q, log_likelihood] = buildTargetStateSpaceGraphOnTheFly(targetStateSpaceGraph, exploredGraph, trueWorldGraph, idNew, Mpc2s, Mc, Mp, Q, log_likelihood, probStopping, m , d  );
+        %          [targetStateSpaceGraph, Mpc2s, Mc, Mp, Q, log_likelihood] = buildTargetStateSpaceGraphOnTheFly(targetStateSpaceGraph, exploredGraph, trueWorldGraph, idNew, Mpc2s, Mc, Mp, Q, log_likelihood, probStopping, m , d  );
     end
     
 end
 
 
 
-switch swarmModel.mappingSensorType
-    case 'perfect'
-        % determine number of target state space graph nodes (after)
-        numNodesGtssPost = numnodes(swarmWorld.targetStateSpaceGraph);
-        log_pNom = log ( (1-probAbsentPrior)/numNodesGtssPost / probAbsentPrior );
-        
-        % add baseline probability to the new nodes
-        for n = numNodesGtssPrior+1:1:numNodesGtssPost
-            swarmWorld.log_likelihood(n) = log_pNom;
-        end
-    case 'noisy'
-%         % add likelihood based on prior target sensor
-%         numNodesGtssPost = numnodes(swarmWorld.targetStateSpaceGraph);
-%         for n = numNodesGtssPrior+1:1:numNodesGtssPost
-%             curNode = swarmWorld.targetStateSpaceGraph.Nodes.curNode(n);
-%             bx = swarmWorld.exploredGraph.Nodes.bx(curNode);
-%             by = swarmWorld.exploredGraph.Nodes.by(curNode);
-%             LR = swarmWorld.O(by,bx) / swarmWorld.U(by,bx);
-%             %fprintf('Adding likelihood from node (%d,%d) = %6.6f , logLR = %3.3f , U = %3.1f , O = %3.1f \n',by,bx,LR, log(LR), swarmWorld.U(by,bx), swarmWorld.O(by,bx) );
-%             swarmWorld.log_likelihood(n) = log ( LR );
-%         end
-        
-        % determine number of target state space graph nodes (after)
-        numNodesGtssPost = numnodes(swarmWorld.targetStateSpaceGraph);
-        
-        
-        % Approach 1 : adaptive, initialize based on size of current state space 
-        %log_pNom = log ( (1-swarmModel.probAbsentPrior)/numNodesGtssPost / swarmModel.probAbsentPrior );
-        
-        % Approach 2 : static, initialize base on estimate of state-space size
-        numNodesEst = (swarmModel.numNodesEstPercent*(trueWorld.numBinsX*trueWorld.numBinsY).^2) + (trueWorld.numBinsX*trueWorld.numBinsY); %
-        log_pNom = log ( (1-swarmModel.probAbsentPrior)/numNodesEst / swarmModel.probAbsentPrior );
-        
-        
-        
-        % add baseline probability to the new nodes
-        for n = numNodesGtssPrior+1:1:numNodesGtssPost
-            swarmWorld.log_likelihood(n) = log_pNom;
-        end
-        %if ( numNodesGtssPrior ~= numNodesGtssPost )
-           %fprintf('Added logLR= %6.6f, LR= %6.6f, numNodesPrior= %d,  numNodesPost = %d, probAbsentPrior = %3.3f \n', log_pNom, exp(log_pNom), numNodesGtssPrior, numNodesGtssPost, swarmModel.probAbsentPrior); 
-        %end
-        
-%         figure(1)
-%         plot(swarmWorld.log_likelihood)
-%         title('Log likelihood')
-%         disp('sum LR')
-%         sum(exp(swarmWorld.log_likelihood))
+% determine number of target state space graph nodes (after)
+numNodesGtssPost = numnodes(swarmWorld.targetStateSpaceGraph);
+
+% Approach 1 : adaptive, initialize based on size of current state space
+%log_pNom = log ( (1-swarmModel.probAbsentPrior)/numNodesGtssPost / swarmModel.probAbsentPrior );
+
+% Approach 2 : static, initialize base on estimate of state-space size
+numNodesEst = (swarmModel.numNodesEstPercent*(trueWorld.numBinsX*trueWorld.numBinsY).^2) + (trueWorld.numBinsX*trueWorld.numBinsY); %
+log_pNom = log ( (1-swarmModel.probAbsentPrior)/numNodesEst / swarmModel.probAbsentPrior );
+
+% add baseline probability to the new nodes
+for n = numNodesGtssPrior+1:1:numNodesGtssPost
+    swarmWorld.log_likelihood(n) = log_pNom;
+    % also for all trackers
+    for p = 1:1:length(swarmWorld.activeTrackerInd)
+       ind = swarmWorld.activeTrackerInd(p);
+       swarmWorld.tracker{ind}.log_likelihood(n) = log_pNom;
+    end
+end
+%if ( numNodesGtssPrior ~= numNodesGtssPost )
+%fprintf('Added logLR= %6.6f, LR= %6.6f, numNodesPrior= %d,  numNodesPost = %d, probAbsentPrior = %3.3f \n', log_pNom, exp(log_pNom), numNodesGtssPrior, numNodesGtssPost, swarmModel.probAbsentPrior);
+%end
+
 end

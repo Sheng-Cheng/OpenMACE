@@ -10,28 +10,33 @@ if ( ~isempty(signals) )
     end
     
     % data association is based on naive gating method:
-    %gates = gateMsmts(V, swarmWorld);
+    gates = gateMsmts(V, swarmWorld);
     
     
     % apply likelihood update to each node
     for j = 1:1:length(V)
         S = findTargStatesInView(swarmWorld.Mc, V(j));
-        %if ( gates{j} == 0 ) % update LRDT
-        for k = 1:1:length(S)
-            swarmWorld.log_likelihood(S(k)) =  swarmWorld.log_likelihood(S(k)) + logMsmtLikelihood(j);
+        if ( isempty(gates) )
+            % update LRDT only
+            for k = 1:1:length(S)
+                swarmWorld.log_likelihood(S(k)) =  swarmWorld.log_likelihood(S(k)) + logMsmtLikelihood(j);
+            end
+        else            
+            for k = 1:1:length(S)
+                if (gates{j} == 1 )
+                    for ind = gates{j};
+                    % if node j is in gate, update tracker
+                    swarmWorld.tracker{ind}.log_likelihood(S(k)) =  swarmWorld.log_likelihood(S(k)) + logMsmtLikelihood(j);
+                    end
+                else
+                    % otherwise update
+                    swarmWorld.log_likelihood(S(k)) =  swarmWorld.log_likelihood(S(k)) + logMsmtLikelihood(j);
+                end
+            end
         end
-        %                     elseif (gates{j} ~= -1 ) % update trackers
-        %                         fprintf('Updating tracker %d ! \n', gates{j});
-        %                         for k = 1:1:length(gates{j})
-        %                             ind = gates{j}(k);
-        %                             for m = 1:1:length(S)
-        %                                 swarmWorld.tracker{ind}.log_likelihood(S(m)) =  swarmWorld.log_likelihood(S(m)) + logMsmtLikelihood(j);
-        %                             end
-        %                         end
-        %                     end
-        
     end
 end
+
 if ( isempty(V) )
     disp('No Nodes in View');
 end

@@ -1,4 +1,4 @@
-function [log_likelihood, tss_probPresent, tss_probAbsent] = normalizeLogLikelihood(log_likelihood)
+function [log_likelihood, tss_probPresent, tss_probAbsent, env_probPresent, log_likelihood_env] = normalizeLogLikelihood(log_likelihood, Mc)
 
 % recover bayesian probabilities (unscaled)
 likelihood = exp(log_likelihood);
@@ -14,5 +14,9 @@ tss_probAbsent = tss_probAbsent / totalProb_sum;
 % recompute log likelihood
 log_likelihood = log( tss_probPresent / tss_probAbsent );
 
+% also project likelihood    
+env_probPresent = projectLikelihood( tss_probPresent , Mc );
+log_likelihood_env = log(projectLikelihood( exp(log_likelihood) , Mc ));
+    
 
 end

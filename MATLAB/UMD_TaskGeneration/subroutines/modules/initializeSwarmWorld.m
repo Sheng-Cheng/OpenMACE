@@ -90,6 +90,7 @@ switch swarmModel.communicationTopology
         swarmWorld.targetDetectedFlag = 0;
             
         swarmWorld.tracker = [];
+        swarmWorld.activeTrackerInd = [];
         
     case 'allToAll'
         for k = 1:swarmModel.N

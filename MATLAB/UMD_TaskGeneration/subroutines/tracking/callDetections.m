@@ -4,8 +4,8 @@ function swarmWorld = callDetections(swarmWorld, swarmState, swarmModel, targetS
     swarmWorld.cumlLR = sum(exp(swarmWorld.log_likelihood));
     
     % Call detections
-    if ( swarmWorld.cumlLR >= swarmModel.cumlLRthresh && swarmWorld.targetDetectedFlag==0 )
-        swarmWorld.targetDetectedFlag = 1;
+    if ( swarmWorld.cumlLR >= swarmModel.cumlLRthresh )
+        %swarmWorld.targetDetectedFlag = 1;
         disp('Target Detected!')
         fprintf('Target Detected! cumlLR = %3.1f >= %3.1f \n', swarmWorld.cumlLR , swarmModel.cumlLRthresh);
         
@@ -17,9 +17,7 @@ function swarmWorld = callDetections(swarmWorld, swarmState, swarmModel, targetS
         by = swarmWorld.exploredGraph.Nodes.by(maxInd);
         predictedTargXY = [trueWorld.xcp(bx) trueWorld.ycp(by)];
         
-        % spawn a tracker
-        newTrackInd = length(swarmWorld.tracker) + 1;
-        fprintf('Spawning tracker %d based on node %d ! \n', newTrackInd, maxInd);
+
         
         % carve out likelihood
         d = 10;
@@ -32,26 +30,23 @@ function swarmWorld = callDetections(swarmWorld, swarmState, swarmModel, targetS
         numNodesEst = (swarmModel.numNodesEstPercent*(trueWorld.numBinsX*trueWorld.numBinsY).^2) + (trueWorld.numBinsX*trueWorld.numBinsY); %
         log_pNom = log ( (1-swarmModel.probAbsentPrior)/numNodesEst / swarmModel.probAbsentPrior );
         
-        
-        %         % debug
-        %         old_likelihood_tss = swarmWorld.log_likelihood;
-        
         % add baseline probability to the new nodes
+        trackerLikelihood = ones(size(swarmWorld.log_likelihood))*log_pNom;
         for n = carveoutStates
-            carveoutLikelihood = swarmWorld.log_likelihood(n);
+            trackerLikelihood(n) = swarmWorld.log_likelihood(n);
             swarmWorld.log_likelihood(n) = log_pNom; % reset
         end
-        [swarmWorld.log_likelihood, swarmWorld.tss_probPresent, swarmWorld.tss_probAbsent] = normalizeLogLikelihood(swarmWorld.log_likelihood);
+        [swarmWorld.log_likelihood, swarmWorld.tss_probPresent, swarmWorld.tss_probAbsent] = normalizeLogLikelihood(swarmWorld.log_likelihood, swarmWorld.Mc);
+        swarmWorld.cumlLR = sum(exp(swarmWorld.log_likelihood));
         
-        %         % debug
-        %         figure;
-        %         title('Target State Space Likelihood');
-        %         plot(old_likelihood_tss,'o-'); hold on;
-        %         plot(swarmWorld.log_likelihood,'o-')
-        
-        % create copy of map with new likelihood
-        
-        
+        % create copy of map for new tracker with new likelihood
+        % spawn a tracker        
+        numTrackers = length(swarmWorld.tracker);
+        ind = numTrackers + 1;
+        swarmWorld.activeTrackerInd = [swarmWorld.activeTrackerInd ind];
+        fprintf('Spawning tracker %d based on node %d ! \n', ind, maxInd);        
+        [swarmWorld.tracker{ind}.log_likelihood, swarmWorld.tracker{ind}.tss_probPresent, swarmWorld.tracker{ind}.tss_probAbsent, swarmWorld.tracker{ind}.env_probPresent, swarmWorld.tracker{ind}.log_likelihood_env] = normalizeLogLikelihood( trackerLikelihood , swarmWorld.Mc );
+
         % get targets xy
         for i = 1:1:targetModel.M
             if ( strcmp(targetModel.type, 'varyingSpeedRandomWalk') )
