@@ -34,8 +34,8 @@ installPrereqs() {
     apt-get install -y libboost-system-dev
     apt-get install -y python-pip
     apt-get install -y python-dev
-    pip install --upgrade pip
-    pip install --upgrade virtualenv
+    # pip install --upgrade pip
+    # pip install --upgrade virtualenv
 
     # If we are installing ROS, these will be installed as dependencies of ROS packages
     if [ "$installROS" != "1" ]; then
@@ -81,7 +81,7 @@ installROS() {
     apt-get install -y ros-${rosVersion}-octomap*
     apt-get install -y ros-${rosVersion}-tf*
     apt-get install -y python-rospkg
-    pip install rospkg
+    # pip install rospkg
 }
 
 
