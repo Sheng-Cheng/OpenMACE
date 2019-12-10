@@ -22,7 +22,7 @@ while( ~all(stationAchieved) )
             elseif ( stationAchieved(agentIndex) ~= 1 )
                 fprintf('VehicleID %d is %3.1f m (< %3.1f m) away from station.\n', ROS_MACE.agentIDs(agentIndex), dist, captureRadius);
 %                 kinematicLocalCommand()
-                kinematicLocalCommand(ROS_MACE,agentIndex,wpts(agentIndex,1),wpts(agentIndex,2),ROS_MACE.operationalAlt(agentIndex),'ENU',[],[],[],'ENU',[],[]);
+%                 kinematicLocalCommand(ROS_MACE,agentIndex,wpts(agentIndex,1),wpts(agentIndex,2),ROS_MACE.operationalAlt(agentIndex),'ENU',[],[],[],'ENU',[],[]);
                 pause(0.1);
             end
         end

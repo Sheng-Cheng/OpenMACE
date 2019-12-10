@@ -9,16 +9,17 @@ for curWpt = [1:1:numWpts]
     for i = 1:1:ROS_MACE.N
         wptsDesired = [ wptsDesired; wpts{i}(curWpt,:) ];
     end
-    plot(wptsDesired(:,1), wptsDesired(:,2),'k+','MarkerSize',4,'linewidth',2);
+    temp_hl = plot(wptsDesired(:,1), wptsDesired(:,2),'k+','MarkerSize',4,'linewidth',2);
     drawnow;
     
     % send
     updateWpts( ROS_MACE, wptsDesired, wptIndex );
     % wait
-    waitForWptsToBeReached( ROS_MACE, wptsDesired, captureRadius)
+    waitForWptsToBeReached( ROS_MACE, wptsDesired, captureRadius);
     disp('**** WPTS ACHIEVED ****');
     disp('Keeping Station for 5 seconds...');
     countdownVerbose(5);
+    set(temp_hl,'Visible','off');
     wptIndex = wptIndex + 1;
 end
 

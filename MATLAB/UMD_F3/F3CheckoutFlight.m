@@ -56,7 +56,7 @@ global agentPosition
 % ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 % ROS_MACE.wptCoordinator = 'integrated';
 % 
-% for i = 1:1:length(ROS_MACE.agentIDs)
+% for i = 1:1:ROS_MACE.N
 %     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
 % end
 % 
@@ -108,7 +108,7 @@ global agentPosition
 % ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 % ROS_MACE.wptCoordinator = 'integrated';
 % 
-% for i = 1:1:length(ROS_MACE.agentIDs)
+% for i = 1:1:ROS_MACE.N
 %     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
 % end
 % 
@@ -177,7 +177,7 @@ global agentPosition
 % ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 % ROS_MACE.wptCoordinator = 'integrated';
 % 
-% for i = 1:1:length(ROS_MACE.agentIDs)
+% for i = 1:1:ROS_MACE.N
 %     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
 % end
 % 
@@ -232,7 +232,7 @@ global agentPosition
 % ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 % ROS_MACE.wptCoordinator = 'integrated';
 % 
-% for i = 1:1:length(ROS_MACE.agentIDs)
+% for i = 1:1:ROS_MACE.N
 %     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
 % end
 % 
@@ -369,7 +369,7 @@ agentPosition = nan(ROS_MACE.N,3);
 ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 ROS_MACE.wptCoordinator = 'integrated';
 
-for i = 1:1:length(ROS_MACE.agentIDs)
+for i = 1:1:ROS_MACE.N
     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
 end
 
@@ -381,10 +381,20 @@ disp('Press any key to send agents to start locations...');
 pause;
 
 % Initial location of all agents
-wpts{1} = [10 5]; 
-wpts{2} = [20 5];
-wpts{3} = [20 -5];
-wpts{4} = [10 -5];
+% wpts{1} = [10 5]; 
+% wpts{2} = [20 5];
+% wpts{3} = [20 -5];
+% wpts{4} = [10 -5];
+
+% initial radius: all the agents will have initial location that is
+% initialRadius away from the swarm center (10,0) in F3 coordinates.
+initialRadius = 5;
+
+for k = 1:ROS_MACE.N
+    wpts{k} = [15 + initialRadius*cos(pi/ROS_MACE.N + 2*pi*k/ROS_MACE.N) ...
+               initialRadius*sin(pi/ROS_MACE.N + 2*pi*k/ROS_MACE.N)];
+end
+
 captureRadius = 1;% 1.2;
 wptManager(ROS_MACE, wpts, captureRadius);
 
@@ -393,8 +403,10 @@ ROS_MACE.positionSub.NewMessageFcn = {@ROSPositionCallback,ROS_MACE};
 
 % orient all agents towards an initial orientation
 for jj = 1:ROS_MACE.N
-    kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',-pi/2*jj+pi,[]);
+%     kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',-pi/2*jj+pi,[]);
+    kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',2*pi*jj/ROS_MACE.N,[]);
     pause(0.5);
+    updatePlot(ROS_MACE);
 end
 disp('Commanding initial yaw angles...');
 
@@ -410,7 +422,7 @@ for k = 1:steps
     
     % compute the control (yaw rate) for all agents
     % all agents have a unit velocity towards right (in the body frame)
-    uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.2);
+    uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-1/initialRadius);
     
     % update plot
     updatePlot(ROS_MACE);
