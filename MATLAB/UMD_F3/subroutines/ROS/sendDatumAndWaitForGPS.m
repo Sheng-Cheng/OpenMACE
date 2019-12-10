@@ -25,7 +25,7 @@ gpsAvailable = zeros(1,ROS_MACE.N);
 
 while(all(isnan(agentPosition)))
     for k = 1:ROS_MACE.N
-        if ~isnan(agentPosition(k,:)) && gpsAvailable(k) == 0
+        if ~any(isnan(agentPosition(k,:))) && gpsAvailable(k) == 0
             fprintf('VehicleID %d Position and Altitude Available.\n', ROS_MACE.agentIDs(k));
             gpsAvailable(k) = 1;
         end

@@ -22,6 +22,9 @@ addpath('./subroutines/geometry')
 addpath('./subroutines/F3')
 addpath('./subroutines/environment')
 addpath('./subroutines/XBee/');
+addpath('./subroutines/testing/');
+addpath('./subroutines/controller/');
+
 % addpath('./subroutines/shortcuts')
 % addpath('./subroutines/dynamics')
 % addpath('./subroutines/display')
@@ -31,6 +34,8 @@ addpath('./subroutines/XBee/');
 % addpath('./external/munkres')
 addpath('./external/utm2deg')
 addpath('./external/deg2utm')
+addpath('./external/hex')
+addpath('./external/distance2curve/')
 % addpath('./external/lat_lon_proportions')
 % addpath('./external/plotmd')
 % addpath('./external/openstreetmap')

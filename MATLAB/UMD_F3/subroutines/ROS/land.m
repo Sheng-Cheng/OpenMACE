@@ -22,11 +22,12 @@ landingAchieved = zeros(1,ROS_MACE.N);
 
 while( ~all(landingAchieved) )
     for k = 1:ROS_MACE.N
-        if (abs(agentPosition(k,3)) <= 0.5) 
+        if ((abs(agentPosition(k,3)) <= 0.5) && landingAchieved(k)==0) 
             landingAchieved(k) = 1;
             fprintf('VehicleID %d Reached Ground  (+/- 0.5 m).\n', ROS_MACE.agentIDs(k));
         end
         pause(0.1);
+        updatePlot(ROS_MACE);
     end
 end
 
