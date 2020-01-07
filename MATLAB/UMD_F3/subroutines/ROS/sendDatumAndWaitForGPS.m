@@ -1,7 +1,7 @@
 function swarmState = sendDatumAndWaitForGPS( ROS_MACE )
 
 global agentPosition
-% swarmState = struct;
+swarmState = struct;
 
 % Setup datum command:
 datumRequest = rosmessage(ROS_MACE.datumClient);
