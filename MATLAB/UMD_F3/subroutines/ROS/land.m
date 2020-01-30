@@ -28,6 +28,7 @@ while( ~all(takeoffAchieved) )
             if ( abs(abs(msg.Altitude) ) <= 0.75 )
                 takeoffAchieved(agentIndex) = 1;
                 fprintf('VehicleID %d Reached Ground  (+/- 0.5 m).\n', msg.VehicleID);
+                colors("Arm"); % Added
             end
         end
     end
@@ -35,6 +36,7 @@ while( ~all(takeoffAchieved) )
 end
 
 disp('Run Complete.')
+colors(0, "white", 0); % Added
 % killMACE;
 % killMACE;
 rosshutdown;

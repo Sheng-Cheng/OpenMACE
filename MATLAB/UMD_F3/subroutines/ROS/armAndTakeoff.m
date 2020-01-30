@@ -11,12 +11,16 @@ for i = 1:1:ROS_MACE.N
     armResponse = call(ROS_MACE.armClient, armRequest, 'Timeout', 5);
     if ( armResponse.Success )
         fprintf('VehicleID %d Arm Command Sent.\n',ROS_MACE.agentIDs(i));
+        %%%%%% Add Arm lights here %%%%%%%
+        colors("Arm"); % Added 
     else 
         fprintf('VehicleID %d Arm Command Failed.\n',ROS_MACE.agentIDs(i));
+        colors("Error"); % Added 
     end    
 end
 disp('Arm Complete. Begin Takeoff.')
-countdownVerbose(4*ROS_MACE.N);
+% countdownVerbose(4*ROS_MACE.N);
+countdownVerbose(ROS_MACE.N);
 
 
 % Setup Vehicle takeoff command:
@@ -34,8 +38,10 @@ for i = 1:1:ROS_MACE.N
     takeoffResponse = call(ROS_MACE.takeoffClient, takeoffRequest, 'Timeout', 5)
     if ( takeoffResponse.Success )
         fprintf('VehicleID %d Takeoff Command Sent.\n',ROS_MACE.agentIDs(i));
+        colors(0, "white", 2); % Added
     else 
         fprintf('VehicleID %d Takeoff Command Failed.\n',ROS_MACE.agentIDs(i));
+        colors("Error"); % Added
     end    
 end
 disp('Waiting for takeoff to complete...')
@@ -53,6 +59,7 @@ while( ~all(takeoffAchieved) )
             if ( abs(abs(msg.Altitude) - ROS_MACE.operationalAlt(agentIndex)) <= 0.20 )
                 takeoffAchieved(agentIndex) = 1;
                 fprintf('VehicleID %d Reached Takeoff Altitude (+/- 0.20 m).\n', msg.VehicleID);
+                colors(0, "green", 1); % Added
             end
         end
     end

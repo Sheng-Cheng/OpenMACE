@@ -22,6 +22,7 @@ addpath('./subroutines/geometry')
 addpath('./subroutines/F3')
 addpath('./subroutines/environment')
 addpath('./subroutines/XBee/');
+addpath('./subroutines/controller/')
 % addpath('./subroutines/shortcuts')
 % addpath('./subroutines/dynamics')
 % addpath('./subroutines/display')
