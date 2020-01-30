@@ -49,6 +49,7 @@ end
 % end
 
 disp('Run Complete.')
+colors(0, "white", 0); % Added
 % killMACE;
 % killMACE;
 rosshutdown;

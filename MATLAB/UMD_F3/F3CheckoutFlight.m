@@ -168,8 +168,13 @@ land( ROS_MACE );
 % ROS_MACE.operationalAlt = [4 8]; % m
 % ROS_MACE.agentIDs = [1 2]; % m
 % ROS_MACE.operationalAlt = [2]; % m
+<<<<<<< HEAD
 % ROS_MACE.agentIDs = [1]; % SYSID_THISMAV on each quadrotor
 % warning: only support one quad mission
+=======
+% ROS_MACE.agentIDs = [3]; % SYSID_THISMAV on each quadrotor
+% % warning: only support one quad mission
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % 
 % agentYawAngle = nan(ROS_MACE.N,1); 
 % agentPosition = nan(ROS_MACE.N,3);
@@ -357,7 +362,95 @@ land( ROS_MACE );
 % pause;
 % land( ROS_MACE );
 
+<<<<<<< HEAD
 % % ============= Test 5: 4 quad takeoff, using Dr. Paley's controller for circular formation and land =========
+=======
+%============= Test 5: 4 quad takeoff, using Dr. Paley's controller for circular formation and land =========
+ROS_MACE.N = 2;
+ROS_MACE.operationalAlt = [4 3]; % m
+ROS_MACE.agentIDs = [3 6]; % SYSID_THISMAV on each quadrotor
+% warning: only support four-quadrotor mission
+
+agentYawAngle = nan(ROS_MACE.N,1); 
+agentPosition = nan(ROS_MACE.N,3);
+
+ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
+ROS_MACE.wptCoordinator = 'integrated';
+
+for i = 1:1:length(ROS_MACE.agentIDs)
+    ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
+end
+
+ROS_MACE = launchROS( ROS_MACE );
+swarmState = sendDatumAndWaitForGPS( ROS_MACE );
+armAndTakeoff( ROS_MACE );
+% colors('Arm');
+
+disp('Press any key to send agents to start locations...');
+pause;
+
+% Initial location of all agents
+wpts{1} = [10 0]; 
+wpts{2} = [20 0];
+% wpts{3} = [20 -5];
+% wpts{4} = [10 -5];
+
+captureRadius = 1;% 1.2;
+wptManager(ROS_MACE, wpts, captureRadius);
+% colors("Waypoint");
+
+% remind matlab who truely is the callback function
+ROS_MACE.positionSub.NewMessageFcn = {@ROSPositionCallback,ROS_MACE};
+
+% orient all agents towards an initial orientation
+for jj = 1:ROS_MACE.N
+    kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',-pi/2*jj+pi,[]);
+    pause(0.5);
+end
+disp('Commanding initial yaw angles...');
+
+disp('Press any key to launch the Dr. Paley mission...')
+pause;
+% colors(3,"blue",0);
+
+steps = 100;
+sampleTime = 0.5;
+
+for k = 1:steps    
+    tic;
+    
+    % compute the control (yaw rate) for all agents
+    % all agents have a unit velocity towards right (in the body frame)
+%     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,0.1);
+    
+    uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.2);
+    
+    % update plot
+    updatePlot(ROS_MACE);
+    
+    % send the control command
+    for j = 1:ROS_MACE.N
+        kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(j),[],[],[],'ENU',0,1,0,'RFU',[],uControl(j));
+    end
+
+    timeSpent = toc;
+    fprintf('Computation time: %f s.\n',timeSpent);  % loop time is unsteady unless we can use the call back function.
+    if timeSpent < sampleTime
+        pause(sampleTime-timeSpent);
+    end
+    fprintf('Loop time: %f s.\n',toc);
+end
+
+
+fprintf('Stop the vehicle.\n');
+loiter(ROS_MACE);
+
+disp('Press any key to land...')
+pause;
+land( ROS_MACE );
+
+% %============= Test 6: 4 quad takeoff, using Dr. Paley's controller19, then reverse direction half way through =========
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % ROS_MACE.N = 4;
 % ROS_MACE.operationalAlt = [4 5 2 3]; % m
 % ROS_MACE.agentIDs = [1 2 3 4]; % SYSID_THISMAV on each quadrotor
@@ -369,18 +462,29 @@ land( ROS_MACE );
 % ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 % ROS_MACE.wptCoordinator = 'integrated';
 % 
+<<<<<<< HEAD
 % for i = 1:1:ROS_MACE.N
+=======
+% for i = 1:1:length(ROS_MACE.agentIDs)
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 %     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
 % end
 % 
 % ROS_MACE = launchROS( ROS_MACE );
+<<<<<<< HEAD
 % sendDatumAndWaitForGPS( ROS_MACE );
 % armAndTakeoff( ROS_MACE );
+=======
+% swarmState = sendDatumAndWaitForGPS( ROS_MACE );
+% armAndTakeoff( ROS_MACE );
+% % colors('Arm');
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % 
 % disp('Press any key to send agents to start locations...');
 % pause;
 % 
 % % Initial location of all agents
+<<<<<<< HEAD
 % % wpts{1} = [10 5]; 
 % % wpts{2} = [20 5];
 % % wpts{3} = [20 -5];
@@ -397,32 +501,55 @@ land( ROS_MACE );
 % 
 % captureRadius = 1;% 1.2;
 % wptManager(ROS_MACE, wpts, captureRadius);
+=======
+% wpts{1} = [10 5]; 
+% wpts{2} = [20 5];
+% wpts{3} = [20 -5];
+% wpts{4} = [10 -5];
+% 
+% captureRadius = 1;% 1.2;
+% wptManager(ROS_MACE, wpts, captureRadius);
+% % colors("Waypoint");
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % 
 % % remind matlab who truely is the callback function
 % ROS_MACE.positionSub.NewMessageFcn = {@ROSPositionCallback,ROS_MACE};
 % 
 % % orient all agents towards an initial orientation
 % for jj = 1:ROS_MACE.N
+<<<<<<< HEAD
 % %     kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',-pi/2*jj+pi,[]);
 %     kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',2*pi*jj/ROS_MACE.N,[]);
 %     pause(0.5);
 %     updatePlot(ROS_MACE);
+=======
+%     kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',-pi/2*jj+pi,[]);
+%     pause(0.5);
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % end
 % disp('Commanding initial yaw angles...');
 % 
 % disp('Press any key to launch the Dr. Paley mission...')
 % pause;
+<<<<<<< HEAD
 % 
+=======
+% % colors(3,"blue",0);
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % 
 % steps = 100;
 % sampleTime = 0.5;
 % 
-% for k = 1:steps    
+<<<<<<< HEAD
+=======
+% for k = 1:(steps/2)    
 %     tic;
 %     
 %     % compute the control (yaw rate) for all agents
 %     % all agents have a unit velocity towards right (in the body frame)
-%     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-1/initialRadius);
+% %     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,0.1);
+%     
+%     uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.2);
 %     
 %     % update plot
 %     updatePlot(ROS_MACE);
@@ -440,6 +567,125 @@ land( ROS_MACE );
 %     fprintf('Loop time: %f s.\n',toc);
 % end
 % 
+% for k = (steps/2+1):steps   
+%     disp("Reverse Direction...")
+%     tic;
+%     
+%     % compute the control (yaw rate) for all agents
+%     % all agents have a unit velocity towards right (in the body frame)
+% %     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,0.1);
+%     
+%     uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,0.2);
+%     
+%     % update plot
+%     updatePlot(ROS_MACE);
+%     
+%     % send the control command
+%     for j = 1:ROS_MACE.N
+%         kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(j),[],[],[],'ENU',0,1,0,'RFU',[],uControl(j));
+%     end
+% 
+%     timeSpent = toc;
+%     fprintf('Computation time: %f s.\n',timeSpent);  % loop time is unsteady unless we can use the call back function.
+%     if timeSpent < sampleTime
+%         pause(sampleTime-timeSpent);
+%     end
+%     fprintf('Loop time: %f s.\n',toc);
+% end
+% 
+% 
+% fprintf('Stop the vehicle.\n');
+% loiter(ROS_MACE);
+% 
+% disp('Press any key to land...')
+% pause;
+% land( ROS_MACE );
+
+% %============= Test 7: 4 quad takeoff, using Dr. Paley's controller37, non-uniform starting positions =========
+% ROS_MACE.N = 4;
+% ROS_MACE.operationalAlt = [4 5 2 3]; % m
+% ROS_MACE.agentIDs = [1 2 3 4]; % SYSID_THISMAV on each quadrotor
+% % warning: only support four-quadrotor mission
+% 
+% agentYawAngle = nan(ROS_MACE.N,1); 
+% agentPosition = nan(ROS_MACE.N,3);
+% 
+% ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
+% ROS_MACE.wptCoordinator = 'integrated';
+% 
+% for i = 1:1:length(ROS_MACE.agentIDs)
+%     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
+% end
+% 
+% ROS_MACE = launchROS( ROS_MACE );
+% swarmState = sendDatumAndWaitForGPS( ROS_MACE );
+% armAndTakeoff( ROS_MACE );
+% % colors('Arm');
+% 
+% disp('Press any key to send agents to start locations...');
+% pause;
+% 
+% % Initial location of all agents
+% wpts{1} = [15 8]; 
+% wpts{2} = [15 3];
+% wpts{3} = [15 -3];
+% wpts{4} = [15 -8];
+% 
+% captureRadius = 1;% 1.2;
+% wptManager(ROS_MACE, wpts, captureRadius);
+% % colors("Waypoint");
+% 
+% % remind matlab who truely is the callback function
+% ROS_MACE.positionSub.NewMessageFcn = {@ROSPositionCallback,ROS_MACE};
+% 
+% % orient all agents towards an initial orientation
+% for jj = 1:ROS_MACE.N
+%     kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(jj),[],[],[],'ENU',0,0,0,'ENU',-pi/2*jj+pi,[]);
+%     pause(0.5);
+% end
+% disp('Commanding initial yaw angles...');
+% 
+% disp('Press any key to launch the Dr. Paley mission...')
+% pause;
+% % colors(3,"blue",0);
+% 
+% steps = 150;
+% sampleTime = 0.5;
+% 
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
+% for k = 1:steps    
+%     tic;
+%     
+%     % compute the control (yaw rate) for all agents
+%     % all agents have a unit velocity towards right (in the body frame)
+<<<<<<< HEAD
+%     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-1/initialRadius);
+=======
+% %     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,0.1);
+%     
+%     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.2);
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
+%     
+%     % update plot
+%     updatePlot(ROS_MACE);
+%     
+%     % send the control command
+%     for j = 1:ROS_MACE.N
+%         kinematicLocalCommand(ROS_MACE,ROS_MACE.agentIDs(j),[],[],[],'ENU',0,1,0,'RFU',[],uControl(j));
+%     end
+% 
+%     timeSpent = toc;
+%     fprintf('Computation time: %f s.\n',timeSpent);  % loop time is unsteady unless we can use the call back function.
+%     if timeSpent < sampleTime
+%         pause(sampleTime-timeSpent);
+%     end
+%     fprintf('Loop time: %f s.\n',toc);
+% end
+% 
+<<<<<<< HEAD
+=======
+% 
+>>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % fprintf('Stop the vehicle.\n');
 % loiter(ROS_MACE);
 % 
