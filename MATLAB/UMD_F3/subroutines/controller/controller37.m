@@ -54,9 +54,10 @@ for j=1:N
 end
 
 R = (1/N)*sum_rk;
+Ro = 15;
 
 for j=1:N
-    r_tilda(j) = position(1,j)+1i*position(2,j) - R;
+    r_tilda(j) = position(1,j)+1i*position(2,j) - Ro;
 end
 
 for ll=1:N

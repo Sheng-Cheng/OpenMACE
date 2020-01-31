@@ -14,11 +14,15 @@ for i = 1:1:ROS_MACE.N
     armResponse = call(ROS_MACE.armClient, armRequest, 'Timeout', 5);
     if ( armResponse.Success )
         fprintf('VehicleID %d Arm Command Sent.\n',ROS_MACE.agentIDs(i));
+        %%%%%% Add Arm lights here %%%%%%%
+        colors("Arm"); % Added, needs recoding: This command changes the color display of ALL quads. But the location of this line only works for quad i.
     else 
         fprintf('VehicleID %d Arm Command Failed.\n',ROS_MACE.agentIDs(i));
+        colors("Error"); % Added, needs recoding: This command changes the color display of ALL quads. But the location of this line only works for quad i.
     end    
 end
 disp('Arm Complete. Begin Takeoff.')
+
 countdownVerbose(1.5*ROS_MACE.N);
 
 
@@ -37,8 +41,10 @@ for i = 1:1:ROS_MACE.N
     takeoffResponse = call(ROS_MACE.takeoffClient, takeoffRequest, 'Timeout', 5)
     if ( takeoffResponse.Success )
         fprintf('VehicleID %d Takeoff Command Sent.\n',ROS_MACE.agentIDs(i));
+        colors(0, "white", 2); % Added, needs changing to quad i
     else 
         fprintf('VehicleID %d Takeoff Command Failed.\n',ROS_MACE.agentIDs(i));
+        colors("Error"); % Added, needs changing to quad i
     end    
 end
 disp('Waiting for takeoff to complete...')
@@ -46,10 +52,12 @@ disp('Waiting for takeoff to complete...')
 takeoffAchieved = zeros(1,ROS_MACE.N);
 
 while( ~all(takeoffAchieved) )
+
     for k = 1:ROS_MACE.N
         if((abs(agentPosition(k,3)-ROS_MACE.operationalAlt(k)) <= 0.2) && (takeoffAchieved(k)==0 ))
             takeoffAchieved(k) = 1;
             fprintf('VehicleID %d Reached Takeoff Altitude (+/- 0.20 m).\n', ROS_MACE.agentIDs(k));
+            colors(0, "green", 1); % Added
         end
         updatePlot(ROS_MACE);
         pause(0.1);
