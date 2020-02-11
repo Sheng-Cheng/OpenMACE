@@ -68,32 +68,50 @@ yLocation = [yLocation temp(temp>=10)-9];
 
 wpts = cell(1,ROS_MACE.N);
 % 
-for k = 1:ROS_MACE.N
-    if yLocation(k)>0
-        wpts{k} = [11-yLocation(k) yLocation(k);...
-                   1-yLocation(k) yLocation(k);...
-                   11-yLocation(k) yLocation(k)];
-    else
-        wpts{k} = [11+yLocation(k) yLocation(k);...
-                   1+yLocation(k) yLocation(k);...
-                   11+yLocation(k) yLocation(k)];
-    end
-end
-% wpts{1} = [5 6;-15 6;10 6;]; % each vector is for a single agent
-% wpts{1} = [5 -6;-15 -6;10 -6];
-
-ROS_MACE = launchROS( ROS_MACE );
-swarmState = sendDatumAndWaitForGPS( ROS_MACE );
-armAndTakeoff( ROS_MACE );
-disp('Press any key to launch waypoint mission...')
-pause;
-
-captureRadius = 1;% 1.2;
-wptManager( ROS_MACE, wpts, captureRadius);
-
-disp('Press any key to land...')
-pause;
-land( ROS_MACE );
+% agentYawAngle = nan(ROS_MACE.N,1); 
+% agentPosition = nan(ROS_MACE.N,3);
+% 
+% ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
+% ROS_MACE.wptCoordinator = 'integrated';
+% 
+% for i = 1:1:ROS_MACE.N
+%     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
+% end
+% 
+% % evenly distribute N quads between y from 1m to 11m and -11m to -1m
+% temp = linspace(0,20,ROS_MACE.N+2);
+% temp = temp(2:end-1);
+% yLocation = temp(temp<10)-11;
+% yLocation = [yLocation temp(temp>=10)-9];
+% 
+% wpts = cell(1,ROS_MACE.N);
+% % 
+% % for k = 1:ROS_MACE.N
+% %     if yLocation(k)>0
+% %         wpts{k} = [11-yLocation(k) yLocation(k);...
+% %                    1-yLocation(k) yLocation(k);...
+% %                    11-yLocation(k) yLocation(k)];
+% %     else
+% %         wpts{k} = [11+yLocation(k) yLocation(k);...
+% %                    1+yLocation(k) yLocation(k);...
+% %                    11+yLocation(k) yLocation(k)];
+% %     end
+% % end
+% % wpts{1} = [5 6;-15 6;10 6;]; % each vector is for a single agent
+% wpts{1} = [5 -6;-5 -6;5 -6];
+% 
+% ROS_MACE = launchROS( ROS_MACE );
+% swarmState = sendDatumAndWaitForGPS( ROS_MACE );
+% armAndTakeoff( ROS_MACE );
+% disp('Press any key to launch waypoint mission...')
+% pause;
+% 
+% captureRadius = 1;% 1.2;
+% wptManager( ROS_MACE, wpts, captureRadius);
+% 
+% disp('Press any key to land...')
+% pause;
+% land( ROS_MACE );
 
 % % ============= Test 2: 1 Quad Takeoff, ascending waypoints, and Land ==============
 % ROS_MACE.N = 1;
@@ -168,13 +186,8 @@ land( ROS_MACE );
 % ROS_MACE.operationalAlt = [4 8]; % m
 % ROS_MACE.agentIDs = [1 2]; % m
 % ROS_MACE.operationalAlt = [2]; % m
-<<<<<<< HEAD
 % ROS_MACE.agentIDs = [1]; % SYSID_THISMAV on each quadrotor
 % warning: only support one quad mission
-=======
-% ROS_MACE.agentIDs = [3]; % SYSID_THISMAV on each quadrotor
-% % warning: only support one quad mission
->>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 % 
 % agentYawAngle = nan(ROS_MACE.N,1); 
 % agentPosition = nan(ROS_MACE.N,3);
@@ -366,9 +379,15 @@ land( ROS_MACE );
 % % ============= Test 5: 4 quad takeoff, using Dr. Paley's controller for circular formation and land =========
 =======
 %============= Test 5: 4 quad takeoff, using Dr. Paley's controller for circular formation and land =========
+<<<<<<< HEAD
 ROS_MACE.N = 2;
 ROS_MACE.operationalAlt = [4 3]; % m
 ROS_MACE.agentIDs = [3 6]; % SYSID_THISMAV on each quadrotor
+=======
+ROS_MACE.N = 4;
+ROS_MACE.operationalAlt = [6 5 3 2]; % m
+ROS_MACE.agentIDs = [1 2 3 4]; % SYSID_THISMAV on each quadrotor
+>>>>>>> post-flight commit of Jan. 31.
 % warning: only support four-quadrotor mission
 
 agentYawAngle = nan(ROS_MACE.N,1); 
@@ -376,6 +395,7 @@ agentPosition = nan(ROS_MACE.N,3);
 
 ROS_MACE.agentIDtoIndex = zeros(1,max(ROS_MACE.agentIDs));
 ROS_MACE.wptCoordinator = 'integrated';
+ROS_MACE.LED = 0; % 0 for not using LED and 1 for using LED
 
 for i = 1:1:length(ROS_MACE.agentIDs)
     ROS_MACE.agentIDtoIndex( ROS_MACE.agentIDs(i) ) = i;
