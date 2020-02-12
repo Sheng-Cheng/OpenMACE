@@ -22,12 +22,7 @@ for i = 1:1:ROS_MACE.N
     end    
 end
 disp('Arm Complete. Begin Takeoff.')
-<<<<<<< HEAD
 countdownVerbose(1.5*ROS_MACE.N);
-=======
-% countdownVerbose(4*ROS_MACE.N);
-countdownVerbose(ROS_MACE.N);
->>>>>>> Added functions to colors.m , added color change commands to ROS subroutines
 
 
 % Setup Vehicle takeoff command:
@@ -54,11 +49,15 @@ end
 disp('Waiting for takeoff to complete...')
 % Wait for each vehicle to achieve takeoff altitude
 takeoffAchieved = zeros(1,ROS_MACE.N);
+% use the counter to count the number of times when a vehicle sits on the
+% gorund
+onGroundCounter = zeros(1,ROS_MACE.N);
 
 while( ~all(takeoffAchieved) )
     for k = 1:ROS_MACE.N
         if((abs(agentPosition(k,3)-ROS_MACE.operationalAlt(k)) <= 0.2) && (takeoffAchieved(k)==0 ))
             takeoffAchieved(k) = 1;
+            onGroundCounter(k) = 0;
             fprintf('VehicleID %d Reached Takeoff Altitude (+/- 0.20 m).\n', ROS_MACE.agentIDs(k));
         end
         updatePlot(ROS_MACE);
