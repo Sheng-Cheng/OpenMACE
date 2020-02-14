@@ -98,7 +98,8 @@ wpts = cell(1,ROS_MACE.N);
 % %     end
 % % end
 % % wpts{1} = [5 6;-15 6;10 6;]; % each vector is for a single agent
-% wpts{1} = [5 -6;-5 -6;5 -6];
+% wpts{1} = [5 -5;-5 -5;5 -5];
+% wpts{2} = [5 -10;-5 -10;5 -10];
 % 
 % ROS_MACE = launchROS( ROS_MACE );
 % swarmState = sendDatumAndWaitForGPS( ROS_MACE );
@@ -380,6 +381,7 @@ wpts = cell(1,ROS_MACE.N);
 =======
 %============= Test 5: 4 quad takeoff, using Dr. Paley's controller for circular formation and land =========
 <<<<<<< HEAD
+<<<<<<< HEAD
 ROS_MACE.N = 2;
 ROS_MACE.operationalAlt = [4 3]; % m
 ROS_MACE.agentIDs = [3 6]; % SYSID_THISMAV on each quadrotor
@@ -388,6 +390,11 @@ ROS_MACE.N = 4;
 ROS_MACE.operationalAlt = [6 5 3 2]; % m
 ROS_MACE.agentIDs = [1 2 3 4]; % SYSID_THISMAV on each quadrotor
 >>>>>>> post-flight commit of Jan. 31.
+=======
+ROS_MACE.N = 3;
+ROS_MACE.operationalAlt = [6 4 2]; % m
+ROS_MACE.agentIDs = [1 2 3]; % SYSID_THISMAV on each quadrotor
+>>>>>>> post-flight of Feb. 14 and added controller 19
 % warning: only support four-quadrotor mission
 
 agentYawAngle = nan(ROS_MACE.N,1); 
@@ -436,14 +443,24 @@ pause;
 steps = 100;
 sampleTime = 0.5;
 
+dataLogging = [];
+
+startTime = tic;
+
 for k = 1:steps    
     tic;
     
     % compute the control (yaw rate) for all agents
     % all agents have a unit velocity towards right (in the body frame)
+<<<<<<< HEAD
 %     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,0.1);
     
     uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.2);
+=======
+%     uControl = controller37(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-1/initialRadius);
+    
+    uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.5); % radius 2 m
+>>>>>>> post-flight of Feb. 14 and added controller 19
     
     % update plot
     updatePlot(ROS_MACE);
@@ -455,12 +472,15 @@ for k = 1:steps
 
     timeSpent = toc;
     fprintf('Computation time: %f s.\n',timeSpent);  % loop time is unsteady unless we can use the call back function.
+    dataLogging = [dataLogging; [toc(startTime)*ones(ROS_MACE.N,1) agentPosition agentYawAngle]];
     if timeSpent < sampleTime
         pause(sampleTime-timeSpent);
     end
     fprintf('Loop time: %f s.\n',toc);
 end
 
+matFileName = ['runData_' datestr(now,'dd_mmm_yyyy_HHMMSS') '.mat'];
+save(matFileName,'-v7.3');
 
 fprintf('Stop the vehicle.\n');
 loiter(ROS_MACE);
