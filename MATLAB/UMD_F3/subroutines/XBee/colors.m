@@ -80,11 +80,11 @@ APIpacket = ZigBeePacket(1,msg);
 serialMsg = sscanf(APIpacket, '%2x');
 
 % open a serial port
-s = serialport('/dev/ttyUSB0',9600);
-
-write(s, serialMsg, 'uint8');
-
-delete(s);
+% s = serialport('/dev/ttyUSB0',9600);
+% 
+% write(s, serialMsg, 'uint8');
+% 
+% delete(s);
 
 
 end
