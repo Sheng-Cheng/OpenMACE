@@ -163,12 +163,12 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_g
 else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_generic/ -lmodule_vehicle_generic
 
 unix {
-    exists(/opt/ros/melodic/lib/) {
+    exists(/opt/ros/kinetic/lib/) {
         DEFINES += ROS_EXISTS
-        INCLUDEPATH += /opt/ros/melodic/include
-        INCLUDEPATH += /opt/ros/melodic/lib
-        LIBS += -L/opt/ros/melodic/lib -loctomath
-        LIBS += -L/opt/ros/melodic/lib -loctomap
+        INCLUDEPATH += /opt/ros/kinetic/include
+        INCLUDEPATH += /opt/ros/kinetic/lib
+        LIBS += -L/opt/ros/kinetic/lib -loctomath
+        LIBS += -L/opt/ros/kinetic/lib -loctomap
     } else {
         INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
         LIBS += -L$$OUT_PWD/../../tools/octomap/lib/ -loctomap -loctomath
