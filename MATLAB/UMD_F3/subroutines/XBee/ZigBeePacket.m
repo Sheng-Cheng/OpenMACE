@@ -10,7 +10,7 @@ function APIpacket = ZigBeePacket(quadID,msg)
 % Address for XBee module #5
 % ZigBeeAddress_64{2} = ['0013A200419B6183'];
 % Set the ZigBeeAddress_64 address as 000000000000FFFF for broadcast
-ZigBeeAddress_64{1} = ['000000000000FFFF']
+ZigBeeAddress_64{1} = ['000000000000FFFF'];
 ZigBeeAddress_16{1} = ['FFFE']; % it seems this address changes every time. Maybe consider change it to FFFE (broadcasting)
 
 % turn the text msg to hex format

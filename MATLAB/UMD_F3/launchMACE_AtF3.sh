@@ -8,7 +8,7 @@ package="launchMACE_AtF3"
 cwd=$(pwd)
 
 # default values - line 175 to change USB to ACM if needed
-NUM_REAL_AGENTS=3
+NUM_REAL_AGENTS=0
 # give USB ports here:
 REAL_AGENT_USB[1]=0
 REAL_AGENT_USB[2]=1
@@ -22,7 +22,7 @@ REAL_AGENT_ID[4]=4
 
 
 # default values
-NUM_SIM_AGENTS=0
+NUM_SIM_AGENTS=3
 # give sim agent is
 SIM_AGENT_ID[1]=1
 SIM_AGENT_ID[2]=2
@@ -47,6 +47,8 @@ CONFIG_XML="Default_ROS.xml"
 # F3
 LAT=38.973699
 LONG=-76.921897
+HomeLAT=38.973612
+HomeLONG=-76.921600
 #% Heron Farm
 #LAT=37.889246;
 #LONG=-76.814084;
@@ -150,6 +152,8 @@ echo ' <?xml version="1.0" encoding="utf-8"?>
 <ModuleConfigurations MaceInstance="1">' > $CONFIG_XML
 
 for ((i=1; i<$((NUM_SIM_AGENTS + 1)); i++)); do   
+NUM_SIM_AGENTS_T=$((NUM_SIM_AGENTS+1))
+HomeLONGThisVehicle=$(echo "scale=7;$HomeLONG-0.000350/$NUM_SIM_AGENTS_T*${SIM_AGENT_ID[$i]}" | bc -l)
 echo " <Module Class=\"VehicleComms\" Type=\"Ardupilot\">
     <Parameter Name=\"ProtocolParameters\">
       <Parameter Name=\"Name\">Mavlink</Parameter>
@@ -165,9 +169,18 @@ echo " <Module Class=\"VehicleComms\" Type=\"Ardupilot\">
     <Parameter Name=\"LocalPositionParameters\">
       <Parameter Name=\"TransformAltitude\">false</Parameter>
     </Parameter>
+    <Parameter Name=\"EKFOrigin\">
+      <Parameter Name=\"SetEKFOrigin\">true</Parameter>
+      <Parameter Name=\"DuplicateToHome\">true</Parameter>
+      <Parameter Name=\"Latitude\">$HomeLAT</Parameter>
+      <Parameter Name=\"Longitude\">$HomeLONGThisVehicle</Parameter>
+      <Parameter Name=\"Altitude\">0.0</Parameter>
+    </Parameter>
   </Module>  " >> $CONFIG_XML
 done
 for ((i=1; i<$((NUM_REAL_AGENTS + 1)); i++)); do   
+NUM_REAL_AGENTS_T=$((NUM_REAL_AGENTS+1))
+HomeLONGThisVehicle=$(echo "scale=7;$HomeLONG-0.000350/$NUM_REAL_AGENTS_T*${REAL_AGENT_ID[$i]}" | bc -l)
 echo "  <Module Class=\"VehicleComms\" Type=\"Ardupilot\">
     <Parameter Name=\"ProtocolParameters\">
       <Parameter Name=\"Name\">Mavlink</Parameter>
@@ -186,6 +199,13 @@ echo "  <Module Class=\"VehicleComms\" Type=\"Ardupilot\">
     </Parameter>
     <Parameter Name=\"LocalPositionParameters\">
       <Parameter Name=\"TransformAltitude\">false</Parameter>
+    </Parameter>
+    <Parameter Name=\"EKFOrigin\">
+      <Parameter Name=\"SetEKFOrigin\">true</Parameter>
+      <Parameter Name=\"DuplicateToHome\">true</Parameter>
+      <Parameter Name=\"Latitude\">$HomeLAT</Parameter>
+      <Parameter Name=\"Longitude\">$HomeLONGThisVehicle</Parameter>
+      <Parameter Name=\"Altitude\">0.0</Parameter>
     </Parameter>
   </Module>  " >> $CONFIG_XML
 done
@@ -256,19 +276,6 @@ if [ $GUI -eq 1 ]
 #    fi
 fi
 
-# Launch MACE
-cd $MACE_ROOT
-echo "Launching MACE..."
-#if [ $OPEN_TERMINALS -eq 0 ]
-#  then
-#    MACE ./MaceSetup_Configs/$CONFIG_XML</dev/null &>/dev/null &
-#  else
-    #gnome-terminal -e "bash -c \"MACE ./MaceSetup_Configs/$CONFIG_XML; exec /bin/bash\""
-    gnome-terminal -e "bash -c \"MACE MaceSetup_Configs/$CONFIG_XML; exec /bin/bash\""
-#fi
-sleep 5s
-
-
 # Launch Arducopter simulations
 cd $ARDUPILOT_ROOT/ArduCopter
 if [ $ARDUCOPTER_CMD -eq 0 ]
@@ -291,6 +298,19 @@ if [ $ARDUCOPTER_CMD -eq 0 ]
     done
     $cwd/$ARDUCOPTER_CMD_LIST 
 fi
+sleep 20s
+
+# Launch MACE
+cd $MACE_ROOT
+echo "Launching MACE..."
+#if [ $OPEN_TERMINALS -eq 0 ]
+#  then
+#    MACE ./MaceSetup_Configs/$CONFIG_XML</dev/null &>/dev/null &
+#  else
+    #gnome-terminal -e "bash -c \"MACE ./MaceSetup_Configs/$CONFIG_XML; exec /bin/bash\""
+    gnome-terminal -e "bash -c \"MACE MaceSetup_Configs/$CONFIG_XML; exec /bin/bash\""
+#fi
+
 
 ## Launch Arducopter simulations
 #cd $ARDUPILOT_ROOT/ArduCopter
