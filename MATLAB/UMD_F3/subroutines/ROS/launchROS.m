@@ -52,6 +52,7 @@ ROS_MACE.attitudeSub.NewMessageFcn = {@ROSAngleCallback,ROS_MACE.agentIDtoIndex}
 
 % Set up service clients:
 ROS_MACE.armClient = rossvcclient('command_arm');
+ROS_MACE.sethomeClient = rossvcclient('command_home');
 ROS_MACE.takeoffClient = rossvcclient('command_takeoff');
 ROS_MACE.landClient = rossvcclient('command_land');
 ROS_MACE.datumClient = rossvcclient('command_datum');

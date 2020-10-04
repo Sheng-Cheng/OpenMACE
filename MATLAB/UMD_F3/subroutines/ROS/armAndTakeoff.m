@@ -2,6 +2,22 @@ function armAndTakeoff( ROS_MACE )
 
 global agentPosition
 
+% set home
+disp('Call set home command');
+
+% Setup datum command:
+homeRequest = rosmessage(ROS_MACE.sethomeClient);
+
+for i = 1:1:ROS_MACE.N
+    homeRequest.Timestamp = rostime('now');
+    homeRequest.VehicleID = ROS_MACE.agentIDs(i); % Not necessary for this
+    homeRequest.SetToCurrent = true; % TODO: Set command ID enum in MACE
+    
+    datumResponse = call(ROS_MACE.sethomeClient, homeRequest, 'Timeout', 5);
+    pause(1);
+end
+
+
 % Setup Arm vehicle command:
 armRequest = rosmessage(ROS_MACE.armClient);
 armRequest.CommandID = 1; % TODO: Set command ID enum in MACE
@@ -37,8 +53,8 @@ for i = 1:1:ROS_MACE.N
     % If you don't set lat/lon (or set them to 0.0), it will takeoff in current position
     % takeoffRequest.LatitudeDeg = 0.0; % If 0.0, takeoff where you currently are
     % takeoffRequest.LongitudeDeg = 0.0; % If 0.0, takeoff where you currently are
-    takeoffRequest
-    takeoffResponse = call(ROS_MACE.takeoffClient, takeoffRequest, 'Timeout', 5)
+%     takeoffRequest
+    takeoffResponse = call(ROS_MACE.takeoffClient, takeoffRequest, 'Timeout', 5);
     if ( takeoffResponse.Success )
         fprintf('VehicleID %d Takeoff Command Sent.\n',ROS_MACE.agentIDs(i));
         colors(0, "white", 2); % Added, needs changing to quad i
