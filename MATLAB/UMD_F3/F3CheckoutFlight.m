@@ -43,12 +43,12 @@ global agentPosition
 % meters.
 
 
-% % ============= Test 1: N Quads Takeoff, Wpt Mission, and Land ==============
+% % % ============= Test 1: N Quads Takeoff, Wpt Mission, and Land ==============
 % ROS_MACE.N = 1;
 % %ROS_MACE.operationalAlt = [4 8]; % m
 % %ROS_MACE.agentIDs = [1 2]; % m
-% ROS_MACE.operationalAlt = [3];% 4]; % m
-% ROS_MACE.agentIDs = [2];% 2]; % SYSID_THISMAV on each quadrotor
+% ROS_MACE.operationalAlt = [2];% 4]; % m
+% ROS_MACE.agentIDs = [1];% 2]; % SYSID_THISMAV on each quadrotor
 % 
 % agentYawAngle = nan(ROS_MACE.N,1); 
 % agentPosition = nan(ROS_MACE.N,3);
@@ -80,7 +80,7 @@ global agentPosition
 % %     end
 % % end
 % % wpts{1} = [5 6;-15 6;10 6;]; % each vector is for a single agent
-% wpts{1} = [5 -5;-5 -5;0 -5];
+% wpts{1} = [5 -5;0 -5;5 -5];
 % % wpts{2} = [5 -10;-5 -10;5 -10];
 % 
 % ROS_MACE = launchROS( ROS_MACE );
@@ -94,6 +94,7 @@ global agentPosition
 % 
 % disp('Press any key to land...')
 % pause;
+
 % land( ROS_MACE );
 
 
@@ -362,9 +363,9 @@ global agentPosition
 
 
 % ============= Test 5: 4 quad takeoff, using Dr. Paley's controller for circular formation and land =========
-ROS_MACE.N = 2;
-ROS_MACE.operationalAlt = [3 5]; % m
-ROS_MACE.agentIDs = [1 2]; % SYSID_THISMAV on each quadrotor
+ROS_MACE.N = 4;
+ROS_MACE.operationalAlt = [5 4 3 2]; % m
+ROS_MACE.agentIDs = [1 2 3 4]; % SYSID_THISMAV on each quadrotor
 % warning: only support four-quadrotor mission
 
 agentYawAngle = nan(ROS_MACE.N,1); 
@@ -388,7 +389,7 @@ pause;
 
 % initial radius: all the agents will have initial location that is
 % initialRadius away from the swarm center (10,0) in F3 coordinates.
-initialRadius = 2;
+initialRadius = 3;
 
 for k = 1:ROS_MACE.N
     wpts{k} = [15 + initialRadius*cos(pi/ROS_MACE.N + 2*pi*k/ROS_MACE.N) ...
@@ -424,7 +425,7 @@ startTime = tic;
 for k = 1:steps    
     tic;
     
-    uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-0.5); % radius 2 m
+    uControl = controller19(agentPosition(:,1:2)',agentYawAngle',ROS_MACE.N,0.1,-1/initialRadius); % radius = initialRadius m
     
     % update plot
     updatePlot(ROS_MACE);
@@ -452,4 +453,4 @@ loiter(ROS_MACE);
 disp('Press any key to land...')
 pause;
 land( ROS_MACE );
-% 
+
