@@ -1,0 +1,43 @@
+Procedure for assigning fixed USB ports. (Sheng Cheng, cheng@terpmail.umd.edu, Nov., 2020)
+
+0. LAZY method: run the following command in your MACE_F3 directory and skip steps 1-5:
+
+$ sudo ./USBmapping.sh
+
+The following procedure shows you how to assign USB mappings step-by-step.
+
+1. Use the following command to write the file for mapping USB names:
+
+$ sudo gedit /etc/udev/rules.d/10-usb-serial.rules
+
+2. Look up properties of the USB device you want to map by examing the following command:
+
+$ udevadm info --name=/dev/ttyUSB0 --attribute-walk
+
+From this command, you shall see the properties of several devices. 
+Usually you can tell which device is the target device by reading through all the properties.
+Take a note of the following properties: ATTRS{idVendor}, ATTRS{idProduct}, ATTRS{serial}.
+
+3. Go to the file opened in step 1 and write the information obtained in step 2. 
+
+The following line shows an example: idVendor, idProduct, and serial are all from step 2; The desired name for this device is ttyUSB_U2S.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A9080BN0",  SYMLINK+="ttyUSB_U2S"
+
+4. Use the following command to make the mapping take effect:
+
+$ sudo udevadm trigger
+
+5. Check whether the mapping is working by examing the following command:
+$ ls -l /dev/ttyUSB*
+
+
+Memo:
+1. The following names are used for drone 1- 6:
+
+ttyUSB_drone1
+ttyUSB_drone2
+ttyUSB_drone3
+ttyUSB_drone4
+ttyUSB_drone5
+ttyUSB_drone6
+
