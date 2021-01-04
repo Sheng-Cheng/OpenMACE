@@ -25,6 +25,7 @@ while( ~all(landingAchieved) )
         if ((abs(agentPosition(k,3)) <= 0.5) && landingAchieved(k)==0) 
             landingAchieved(k) = 1;
             fprintf('VehicleID %d Reached Ground  (+/- 0.5 m).\n', ROS_MACE.agentIDs(k));
+            colors("Arm"); % Added, "Disarm" maybe?
         end
         pause(0.1);
         updatePlot(ROS_MACE);
