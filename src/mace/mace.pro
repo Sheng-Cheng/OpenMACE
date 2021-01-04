@@ -33,10 +33,15 @@ INSTALLS += target
 INCLUDEPATH += $$PWD/../
 INCLUDEPATH += $$(MACE_ROOT)/include
 INCLUDEPATH += $$(MACE_ROOT)/Eigen/include/eigen3
-INCLUDEPATH += $$PWD/../../speedLog/
+INCLUDEPATH += $$PWD/../../spdlog/
 INCLUDEPATH += $$PWD/../../mavlink_cpp/MACE/mace_common/
 INCLUDEPATH += $$PWD/../../mavlink_cpp/MAVLINK_BASE/ardupilotmega/
 INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
+
+# Eigen Warning suppression:
+QMAKE_CXXFLAGS += -isystem $$(MACE_ROOT)/Eigen/include/eigen3
+# Octomap Warning suppression:
+QMAKE_CXXFLAGS += -isystem $$OUT_PWD/../../tools/octomap/octomap/include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../tools/octomap/bin/ -loctomap -loctomath
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../tools/octomap/bin/ -loctomap -loctomath
@@ -122,6 +127,10 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_ground_stati
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_ground_station/debug/ -lmodule_ground_station
 else:unix:!macx: LIBS += -L$$OUT_PWD/../module_ground_station/ -lmodule_ground_station
 
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_ml_station/release/ -lmodule_ml_station
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_ml_station/debug/ -lmodule_ml_station
+else:unix:!macx: LIBS += -L$$OUT_PWD/../module_ml_station/ -lmodule_ml_station
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_resource_task_allocation/release/ -lmodule_resource_task_allocation
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_resource_task_allocation/debug/ -lmodule_resource_task_allocation
 else:unix:!macx: LIBS += -L$$OUT_PWD/../module_resource_task_allocation/ -lmodule_resource_task_allocation
@@ -142,6 +151,14 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_ardu
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_ardupilot/debug/ -lmodule_vehicle_ardupilot
 else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_ardupilot/ -lmodule_vehicle_ardupilot
 
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_arducopter/release/ -lmodule_vehicle_arducopter
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_arducopter/debug/ -lmodule_vehicle_arducopter
+else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_arducopter/ -lmodule_vehicle_arducopter
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_arduplane/release/ -lmodule_vehicle_arduplane
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_arduplane/debug/ -lmodule_vehicle_arduplane
+else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_arduplane/ -lmodule_vehicle_arduplane
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_generic/release/ -lmodule_vehicle_generic
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_generic/debug/ -lmodule_vehicle_generic
 else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_generic/ -lmodule_vehicle_generic
@@ -153,6 +170,10 @@ else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_MAVLINK/ -lmodule_vehicle_MAVLI
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_sensors/release/ -lmodule_vehicle_sensors
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_sensors/debug/ -lmodule_vehicle_sensors
 else:unix:!macx: LIBS += -L$$OUT_PWD/../module_vehicle_sensors/ -lmodule_vehicle_sensors
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_adept/release/ -lmodule_vehicle_adept
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_adept/debug/ -lmodule_vehicle_adept
+else:unix:!macx: LIBS += -L$$OUT_PWD/../module_vehicle_adept/ -lmodule_vehicle_adept
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../planners/release/ -lplanners
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../planners/debug/ -lplanners
@@ -171,47 +192,61 @@ win32: LIBS += -limagehlp
 unix: LIBS += -lboost_system
 unix: LIBS += -llz4
 
+
 unix {
-    exists(/opt/ros/kinetic/lib/) {
-        DEFINES += ROS_EXISTS
-        INCLUDEPATH += /opt/ros/kinetic/include
-        INCLUDEPATH += /opt/ros/kinetic/lib
+      exists($$(ROS_ROOT_DIR)/lib/) {
 
-        LIBS += -L/opt/ros/kinetic/lib -lroscpp
-        LIBS += -L/opt/ros/kinetic/lib -lroscpp_serialization
-        LIBS += -L/opt/ros/kinetic/lib -lrostime
-        LIBS += -L/opt/ros/kinetic/lib -lxmlrpcpp
-        LIBS += -L/opt/ros/kinetic/lib -lcpp_common
-        LIBS += -L/opt/ros/kinetic/lib -lrosconsole_log4cxx
-        LIBS += -L/opt/ros/kinetic/lib -lrosconsole_backend_interface
-        LIBS += -L/opt/ros/kinetic/lib -lroslib
-        LIBS += -L/opt/ros/kinetic/lib -lrospack
-        LIBS += -L/opt/ros/kinetic/lib -lmessage_filters
-        LIBS += -L/opt/ros/kinetic/lib -lclass_loader
-        LIBS += -L/opt/ros/kinetic/lib -lconsole_bridge
-        LIBS += -L/opt/ros/kinetic/lib -lrosconsole
-        LIBS += -L/opt/ros/kinetic/lib -limage_transport
-        LIBS += -L/opt/ros/kinetic/lib -lcv_bridge
-        LIBS += -L/opt/ros/kinetic/lib -ltf
-        LIBS += -L/opt/ros/kinetic/lib -ltf2
-        LIBS += -L/opt/ros/kinetic/lib -ltf2_ros
-        LIBS += -L/opt/ros/kinetic/lib -lactionlib
-        LIBS += -L/opt/ros/kinetic/lib -loctomap_ros
-        LIBS += -L/opt/ros/kinetic/lib -loctomap
-        LIBS += -L/opt/ros/kinetic/lib -loctomath
 
-#        LIBS += -L$$(MACE_ROOT)/catkin_sim_environment/devel/lib/ -lmace_matlab_msgs
+      DEFINES += ROS_EXISTS
+      INCLUDEPATH += $$(ROS_ROOT_DIR)/include
+      INCLUDEPATH += $$(ROS_ROOT_DIR)/lib
 
-        INCLUDEPATH += $$(MACE_ROOT)/catkin_sim_environment/devel/include
-        DEPENDPATH += $$(MACE_ROOT)/catkin_sim_environment/devel/include
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lroscpp
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lroscpp_serialization
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lrostime
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lxmlrpcpp
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lcpp_common
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lrosconsole_log4cxx
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lrosconsole_backend_interface
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lroslib
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lrospack
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lmessage_filters
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lclass_loader
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lconsole_bridge
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lrosconsole
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -limage_transport
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lcv_bridge
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -ltf
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -ltf2
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -ltf2_ros
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -lactionlib
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -loctomap_ros
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -loctomap
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -loctomath
 
-    } else {
-        INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
-        LIBS += -L$$OUT_PWD/../../tools/octomap/lib/ -loctomap -loctomath
-    }
+      #LIBS += -L$$(MACE_ROOT)/catkin_sim_environment/devel/lib/ -lmace_matlab_msgs
+
+      INCLUDEPATH += $$(MACE_ROOT)/catkin_sim_environment/devel/include
+      DEPENDPATH += $$(MACE_ROOT)/catkin_sim_environment/devel/include
+
+      # ROS Warning suppression:
+      QMAKE_CXXFLAGS += -isystem $$(ROS_ROOT_DIR)/include
+      QMAKE_CXXFLAGS += -isystem $$(MACE_ROOT)/catkin_sim_environment/devel/include
+      } else {
+      message("ROS root" path has not been detected...)
+      INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
+      LIBS += -L$$OUT_PWD/../../tools/octomap/lib/ -loctomap -loctomath
+
+      # Octomap Warning suppression:
+      QMAKE_CXXFLAGS += -isystem $$OUT_PWD/../../tools/octomap/octomap/include
+      }
 }
+
 
 unix:!macx|win32: LIBS += -L$$PWD/../../tools/flann/build/lib/ -lflann_s
 
 INCLUDEPATH += $$PWD/../../tools/flann/src/cpp
 DEPENDPATH += $$PWD/../../tools/flann/src/cpp
+
+# Flann Warning suppression:
+QMAKE_CXXFLAGS += -isystem $$PWD/../../tools/flann/src/cpp

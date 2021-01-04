@@ -19,10 +19,15 @@ DEFINES += EIGEN_DONT_VECTORIZE
 DEFINES += EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
 
 
-SOURCES += module_vehicle_mavlink.cpp \
+SOURCES += \
+    controllers/commands/command_msg_interval.cpp \
+    controllers/controller_parameter_request.cpp \
+    module_vehicle_mavlink.cpp \
     vehicle_object/mavlink_vehicle_object.cpp \
     vehicle_object/state_data_mavlink.cpp \
     vehicle_object/parse_mavlink.cpp \
+    vehicle_object/status_data_mavlink.cpp \
+    environment_object/environment_data_mavlink.cpp \
     controllers/controller_guided_mission_item.cpp \
     vehicle_object/mission_data_mavlink.cpp \
     controllers/controller_guided_target_item_local.cpp \
@@ -31,6 +36,8 @@ SOURCES += module_vehicle_mavlink.cpp \
     controllers/controller_guided_target_item_attitude.cpp
 
 HEADERS += module_vehicle_mavlink.h\
+    controllers/controller_parameter_request.h \
+  controllers/controller_vision_position_estimate.h \
         module_vehicle_mavlink_global.h \
     controllers/controller_system_mode.h \
     controllers/commands/command_arm.h \
@@ -40,6 +47,8 @@ HEADERS += module_vehicle_mavlink.h\
     controllers/commands/generic_long_command.h \
     vehicle_object/mavlink_vehicle_object.h \
     vehicle_object/state_data_mavlink.h \
+    vehicle_object/status_data_mavlink.h \
+    environment_object/environment_data_mavlink.h \
     controllers/controller_mission.h \
     controllers/controller_guided_mission_item.h \
     vehicle_object/mission_data_mavlink.h \
@@ -57,7 +66,7 @@ HEADERS += module_vehicle_mavlink.h\
 
 INCLUDEPATH += $$PWD/../../mavlink_cpp/MACE/mace_common/
 INCLUDEPATH += $$PWD/../../mavlink_cpp/MAVLINK_BASE/ardupilotmega
-INCLUDEPATH += $$PWD/../../speedLog/
+INCLUDEPATH += $$PWD/../../spdlog/
 
 # Unix lib Install
 unix:!symbian {
@@ -102,10 +111,13 @@ headers_vehicle_object.files   += \
 INSTALLS       += headers_vehicle_object
 
 INCLUDEPATH += $$PWD/../
-INCLUDEPATH += $$PWD/../../speedLog/
+INCLUDEPATH += $$PWD/../../spdlog/
 INCLUDEPATH += $$PWD/../../mavlink_cpp/MACE/mace_common/
 INCLUDEPATH += $$PWD/../../mavlink_cpp/MAVLINK_BASE/ardupilotmega/
 INCLUDEPATH += $$(MACE_ROOT)/Eigen/include/eigen3
+
+# Eigen Warning suppression:
+QMAKE_CXXFLAGS += -isystem $$(MACE_ROOT)/Eigen/include/eigen3
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../base/release/ -lbase
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../base/debug/ -lbase
@@ -160,17 +172,24 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../module_vehicle_g
 else:unix: LIBS += -L$$OUT_PWD/../module_vehicle_generic/ -lmodule_vehicle_generic
 
 unix {
-    exists(/opt/ros/kinetic/lib/) {
-        DEFINES += ROS_EXISTS
-        INCLUDEPATH += /opt/ros/kinetic/include
-        INCLUDEPATH += /opt/ros/kinetic/lib
-        LIBS += -L/opt/ros/kinetic/lib -loctomath
-        LIBS += -L/opt/ros/kinetic/lib -loctomap
+    exists($$(ROS_ROOT_DIR)/lib/) {
+
+      DEFINES += ROS_EXISTS
+      INCLUDEPATH += $$(ROS_ROOT_DIR)/include
+      INCLUDEPATH += $$(ROS_ROOT_DIR)/lib
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -loctomath
+      LIBS += -L$$(ROS_ROOT_DIR)/lib -loctomap
+
     } else {
-        INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
-        LIBS += -L$$OUT_PWD/../../tools/octomap/lib/ -loctomap -loctomath
+      message("ROS root" path has not been detected...)
+      INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
+      LIBS += -L$$OUT_PWD/../../tools/octomap/lib/ -loctomap -loctomath
+
+      # Octomap Warning suppression:
+      QMAKE_CXXFLAGS += -isystem $$OUT_PWD/../../tools/octomap/octomap/include
     }
 }
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../tools/octomap/bin/ -loctomap -loctomath
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../tools/octomap/bin/ -loctomap -loctomath
 win32:INCLUDEPATH += $$OUT_PWD/../../tools/octomap/octomap/include
