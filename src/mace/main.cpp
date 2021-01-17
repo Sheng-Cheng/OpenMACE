@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     int hostMaceInstance;
     if(parser.HasStaticMaceInstanceID() == true)
     {
-        hostMaceInstance = parser.GetStaticMaceInstanceID();;
+        hostMaceInstance = parser.GetStaticMaceInstanceID();
     }
     else {
         throw std::runtime_error("No Mace instance ID is given.");

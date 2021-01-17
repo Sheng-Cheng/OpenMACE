@@ -1,6 +1,7 @@
 #ifndef MAVLINK_VEHICLE_OBJECT_H
 #define MAVLINK_VEHICLE_OBJECT_H
 
+#include "data/timer.h"
 #include "commsMAVLINK/comms_mavlink.h"
 
 #include "controllers/generic_controller.h"
@@ -134,6 +135,7 @@ private:
 public:
     Data::DataGetSetNotifier<Data::MACEHSMState> _currentHSMState;
 
+    Timer m_MSGTimer;
 public:
     StateData_MAVLINK *state;
     EnvironmentData_MAVLINK *environment;

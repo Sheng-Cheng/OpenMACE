@@ -81,6 +81,9 @@ bool MavlinkVehicleObject::parseMessage(const mavlink_message_t *msg){
     }
     case MAVLINK_MSG_ID_ATTITUDE:
     {
+        std::cout<<"The elapsed time is: "<<m_MSGTimer.elapsedMilliseconds()<<std::endl;
+        m_MSGTimer.reset();
+
         //This is message definition 30
         //The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).
         mavlink_attitude_t decodedMSG;

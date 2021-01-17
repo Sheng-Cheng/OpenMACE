@@ -15,6 +15,7 @@ MavlinkVehicleObject::MavlinkVehicleObject(CommsMAVLINK *commsObj, const MaceCor
     Data::EnvironmentTime::CurrentTime(Data::Devices::SYSTEMCLOCK, prevAttitude);
     Data::EnvironmentTime::CurrentTime(Data::Devices::SYSTEMCLOCK, prevPosition);
 
+    m_MSGTimer.start();
 }
 
 MavlinkVehicleObject::~MavlinkVehicleObject()
